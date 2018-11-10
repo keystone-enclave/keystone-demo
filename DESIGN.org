@@ -1,0 +1,27 @@
+* Objectives of demo application
+ + Enclave remote attestation demonstration
+ + Enclave communication to host demonstration
+ + Trusted enclave communication over-the-wire facilitated by host
+
+* Design
+** Layout
+ + Client is connected over network to Server
+ + Server runs Calculator
+** Remote host "Client"
+ + Trusted entity
+ + Requests creation of client enclave on the Server
+ + Has verifier for enclave attestation
+ + Has trusted computation it wants to do remotely
+** Local host "Server"
+ + Untrusted
+ + Starts enclave app on demand from Client
+ + Proxies/manages network connections of opaque encrypted communications
+** Enclave app "Calculator"
+ + Creates trusted channel with remote host
+ + Receives data to compute on
+ + Performs computation and sends back results
+
+
+* Ideas for calculator
+ + Simple incidence-of-word counts program
+   - Given blob of text, counts occurances of given words in the text
