@@ -25,3 +25,6 @@
 * Ideas for calculator
  + Simple incidence-of-word counts program
    - Given blob of text, counts occurances of given words in the text
+
+* Channel
+ + For now, the eapp will handle the secure channel. We will want to put this as a runtime feature later.

@@ -12,17 +12,17 @@ SDK_INCLUDE_HOST_DIR = $(SDK_LIB_DIR)/host/include
 SDK_INCLUDE_EDGE_DIR = $(SDK_LIB_DIR)/edge/include
 
 RUNTIME=eyrie-rt
-RUNNER=test-runner.riscv
+EHOST=enclave-host.riscv
 CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR)
 LDFLAGS = -L$(SDK_LIB_DIR)
 
 APPS = clients
 
-SRCS = $(patsubst %.riscv, %.cpp, $(RUNNER))
-OBJS = $(patsubst %.riscv, %.o,$(RUNNER)) $(KEYSTONE_OBJ) edge_wrapper.o
+SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
 
 all:  $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) 
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(RUNNER) $^
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
 	$(foreach app, $(APPS),\
 		$(MAKE) -C $(app);\
 	)
