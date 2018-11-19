@@ -3,7 +3,7 @@ $(error KEYSTONE_SDK_DIR is not set)
 endif
 
 APP = clients
-APP_C_SRCS= clients.c edge_wrapper.c
+APP_C_SRCS= clients.c edge_wrapper.c calculator.c
 
 CC = riscv64-unknown-linux-gnu-gcc
 CFLAGS = -Wall -Werror

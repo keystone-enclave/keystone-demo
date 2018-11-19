@@ -3,6 +3,7 @@
 #include "syscall.h"
 #include "malloc.h"
 #include "edge_wrapper.h"
+#include "calculator.h"
 
 void EAPP_ENTRY eapp_entry(){
 
@@ -12,18 +13,29 @@ void EAPP_ENTRY eapp_entry(){
   
   unsigned long ret = ocall_print_buffer(outstr, 17);
 
-  edge_data_t msg = ocall_wait_for_message();
-  
-  void* msg_data = malloc(msg.len);
 
-  if(msg_data == NULL){
-    ocall_print_value(0);
-    EAPP_RETURN(ret);
-  }
-  
-  copy_from_shared(msg_data, msg.offset, msg.len);
+  //  while(1){
+    edge_data_t msg = ocall_wait_for_message();
+    void* msg_data = malloc(msg.size);
 
-  ocall_print_value(msg.len);
+    if(msg_data == NULL){
+      ocall_print_value(0);
+      EAPP_RETURN(ret);
+    }
+    copy_from_shared(msg_data, msg.offset, msg.size);
+	
+    /* TODO Channel stuff here */
+
+    if(((calc_message_t*)msg_data)->msg_type == CALC_MSG_EXIT){
+      ocall_print_buffer("GOT EXIT\n",9);
+      EAPP_RETURN(ret);
+    }
+    char* word_data = msg_data + sizeof(calc_message_t);
+    int val = word_count(word_data);
+    ocall_print_value(val);
+    
+    free(msg_data);
+    //  }
   
   EAPP_RETURN(ret);
 }

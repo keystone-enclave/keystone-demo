@@ -11,6 +11,7 @@ void edge_init(){
 #define OCALL_PRINT_BUFFER 1
 #define OCALL_PRINT_VALUE 2
 #define OCALL_WAIT_FOR_MESSAGE 4
+#define OCALL_SEND_REPLY 5
 
 void ocall_print_value(unsigned long val){
 

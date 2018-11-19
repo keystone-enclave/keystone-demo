@@ -34,7 +34,7 @@ $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
 clean:
-	rm -f *.o *.riscv test
-	$(foreach test, $(TESTS), \
-		$(MAKE) -C $(test) clean; \
+	rm -f *.o *.riscv
+	$(foreach app, $(APPS), \
+		$(MAKE) -C $(app) clean; \
 	)

@@ -3,10 +3,9 @@
 #include "keystone.h"
 #include "edge_wrapper.h"
 #include "encl_message.h"
+#include "calculator.h"
 
-const char* longstr = "hellohellohellohellohellohellohellohellohellohello";
-
-
+const char* longstr = "hello hello hello hello hello hello hello hello hello hello";
 
 unsigned long print_buffer(char* str){
   printf("Enclave said: %s",str);
@@ -18,14 +17,25 @@ void print_value(unsigned long val){
   return;
 }
 
-void send_reply(edge_data_t message){
+void send_reply(void* data, size_t len){
   printf("GOT A MESSAGE FROM ENCLAVE\n");
 }
 
 encl_message_t wait_for_message(){
+
+  /* This all will happen on the remote */
+  calc_message_t calc_msg;
+  calc_msg.msg_type = CALC_MSG_WORDCOUNT;
+  calc_msg.len = strlen(longstr)+1;
+  void* tmpbuf = malloc(calc_msg.len + sizeof(calc_message_t));
+  memcpy(tmpbuf, (void*)&calc_msg, sizeof(calc_message_t));
+  memcpy(tmpbuf+sizeof(calc_message_t), (void*)longstr, calc_msg.len);
+  size_t tmpsize = calc_msg.len + sizeof(calc_message_t);
+
+  /* This happens here */
   encl_message_t message;
-  message.host_ptr = (void*) longstr;
-  message.len = strlen(longstr)+1;
+  message.host_ptr = tmpbuf;
+  message.len = tmpsize;
   return message;
 }
 
