@@ -6,8 +6,8 @@ ifndef LIBSODIUM_DIR
 $(error LIBSODIUM is not set)
 endif
 
-APP = clients
-APP_C_SRCS= clients.c edge_wrapper.c calculator.c channel.c
+APP = server_eapp
+APP_C_SRCS= server_eapp.c edge_wrapper.c calculator.c channel.c
 
 CC = riscv64-unknown-linux-gnu-gcc
 CFLAGS = -Wall -Werror
