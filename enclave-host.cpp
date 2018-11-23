@@ -3,7 +3,7 @@
 #include "keystone.h"
 #include "edge_wrapper.h"
 #include "encl_message.h"
-#include "calculator.h"
+#include "calc_msg.h"
 
 const char* longstr = "hello hello hello hello hello hello hello hello hello hello";
 
@@ -24,18 +24,17 @@ void send_reply(void* data, size_t len){
 encl_message_t wait_for_message(){
 
   /* This all will happen on the remote */
-  calc_message_t calc_msg;
-  calc_msg.msg_type = CALC_MSG_WORDCOUNT;
-  calc_msg.len = strlen(longstr)+1;
-  void* tmpbuf = malloc(calc_msg.len + sizeof(calc_message_t));
-  memcpy(tmpbuf, (void*)&calc_msg, sizeof(calc_message_t));
-  memcpy(tmpbuf+sizeof(calc_message_t), (void*)longstr, calc_msg.len);
-  size_t tmpsize = calc_msg.len + sizeof(calc_message_t);
+  size_t datalen = strlen(longstr)+1; 
+  calc_message_t* calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen);
+  calc_msg->msg_type = CALC_MSG_WORDCOUNT;
+  calc_msg->len = datalen;
+  memcpy(calc_msg->msg, (void*)longstr, calc_msg->len);
+  size_t totalsize = calc_msg->len + sizeof(calc_message_t);
 
   /* This happens here */
   encl_message_t message;
-  message.host_ptr = tmpbuf;
-  message.len = tmpsize;
+  message.host_ptr = calc_msg;
+  message.len = totalsize;
   return message;
 }
 
@@ -72,6 +71,9 @@ int main(int argc, char** argv)
     printf("Usage: %s <eapp> <runtime>\n", argv[0]);
     return 0;
   }
+
+  /* Wait for network connection */
+
   Keystone enclave;
   Params params;
 
@@ -81,7 +83,8 @@ int main(int argc, char** argv)
 
   edge_init(&enclave);
 
-  enclave.run();
+  int rval = enclave.run();
+  printf("rval: %i\n",rval);
 
   return 0;
 }
