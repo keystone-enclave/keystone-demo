@@ -3,9 +3,7 @@
 #include "keystone.h"
 #include "edge_wrapper.h"
 #include "encl_message.h"
-#include "calc_msg.h"
-
-const char* longstr = "hello hello hello hello hello hello hello hello hello hello";
+#include "dummy_client.h"
 
 unsigned long print_buffer(char* str){
   printf("Enclave said: %s",str);
@@ -21,20 +19,21 @@ void send_reply(void* data, size_t len){
   printf("GOT A MESSAGE FROM ENCLAVE\n");
 }
 
+void* wait_for_client_pubkey(){
+  return dummy_client_pubkey();
+}
+
+/* Buffer must be free'd after this */
 encl_message_t wait_for_message(){
 
-  /* This all will happen on the remote */
-  size_t datalen = strlen(longstr)+1; 
-  calc_message_t* calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen);
-  calc_msg->msg_type = CALC_MSG_WORDCOUNT;
-  calc_msg->len = datalen;
-  memcpy(calc_msg->msg, (void*)longstr, calc_msg->len);
-  size_t totalsize = calc_msg->len + sizeof(calc_message_t);
-
+  size_t len;
+  
+  void* buffer = dummy_client_generate_message(&len);
+  
   /* This happens here */
   encl_message_t message;
-  message.host_ptr = calc_msg;
-  message.len = totalsize;
+  message.host_ptr = buffer;
+  message.len = len;
   return message;
 }
 

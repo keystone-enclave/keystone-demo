@@ -2,16 +2,12 @@
 #include "string.h"
 #include "syscall.h"
 #include "edge_wrapper.h"
+#include "edge_defines.h"
 
 void edge_init(){
   /* Nothing for now, will probably register buffers/callsites
      later */
 }
-
-#define OCALL_PRINT_BUFFER 1
-#define OCALL_PRINT_VALUE 2
-#define OCALL_WAIT_FOR_MESSAGE 4
-#define OCALL_SEND_REPLY 5
 
 void ocall_print_value(unsigned long val){
 
@@ -35,4 +31,11 @@ edge_data_t ocall_wait_for_message(){
   ocall(OCALL_WAIT_FOR_MESSAGE, NULL, 0, &msg, sizeof(edge_data_t));
 
   return msg;
+}
+
+// TODO failure case
+void ocall_wait_for_client_pubkey(unsigned char* pk, size_t len){
+  ocall(OCALL_WAIT_FOR_CLIENT_PUBKEY, NULL, 0, pk, len);
+
+  return;
 }

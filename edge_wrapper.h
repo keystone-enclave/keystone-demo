@@ -4,6 +4,9 @@
 #include <edge_call.hpp>
 #include "keystone.h"
 
+#define crypto_kx_PUBLICKEYBYTES 32
+
+
 typedef struct encl_message_t {
   void* host_ptr;
   size_t len;  
@@ -25,5 +28,9 @@ encl_message_t wait_for_message();
 
 void send_reply_wrapper(void* buffer);
 void send_reply(void* message, size_t len);
+
+void wait_for_client_pubkey_wrapper(void* buffer);
+void* wait_for_client_pubkey();
+
 
 #endif /* _EDGE_WRAPPER_H_ */

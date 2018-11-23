@@ -16,13 +16,13 @@ SDK_INCLUDE_VERIFIER_DIR = $(SDK_LIB_DIR)/verifier
 
 RUNTIME=eyrie-rt
 EHOST=enclave-host.riscv
-CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR)
+CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/
 LDFLAGS = -L$(SDK_LIB_DIR)
 
 APPS = clients
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
-OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o dummy_client.o
 
 all:  $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) 
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
