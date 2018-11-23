@@ -23,6 +23,7 @@ void* wait_for_client_pubkey(){
   return dummy_client_pubkey();
 }
 
+
 /* Buffer must be free'd after this */
 encl_message_t wait_for_message(){
 
@@ -72,7 +73,8 @@ int main(int argc, char** argv)
   }
 
   /* Wait for network connection */
-
+  dummy_client_init();
+  
   Keystone enclave;
   Params params;
 

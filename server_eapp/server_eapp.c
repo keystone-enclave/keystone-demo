@@ -28,8 +28,6 @@ void EAPP_ENTRY eapp_entry(){
   ocall_wait_for_client_pubkey(client_pk, crypto_kx_PUBLICKEYBYTES);
 
   //  ocall_copy_report(buffer, 2048);
-
-  ocall_print_buffer("OK\n",3);
   
   //  while(1){
     edge_data_t msg = ocall_wait_for_message();

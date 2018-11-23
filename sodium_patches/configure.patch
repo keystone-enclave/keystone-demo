@@ -1,0 +1,21 @@
+diff --git a/configure.ac b/configure.ac
+index 89c9096b..48823e8a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -784,11 +784,11 @@ __sync_lock_release(&_sodium_lock);
+ dnl Checks for functions and headers
+ 
+ AC_FUNC_ALLOCA
+-AS_IF([test "x$EMSCRIPTEN" = "x"],[
+-  AC_CHECK_FUNCS([arc4random arc4random_buf])
+-  AC_CHECK_FUNCS([mmap mlock madvise mprotect memset_s explicit_bzero nanosleep])
+-])
+-AC_CHECK_FUNCS([posix_memalign getpid])
++#AS_IF([test "x$EMSCRIPTEN" = "x"],[
++#  AC_CHECK_FUNCS([arc4random arc4random_buf])
++#  AC_CHECK_FUNCS([mmap mlock madvise mprotect memset_s explicit_bzero nanosleep])
++#])
++#AC_CHECK_FUNCS([posix_memalign getpid])
+ 
+ AC_SUBST([LIBTOOL_EXTRA_FLAGS])
+ 

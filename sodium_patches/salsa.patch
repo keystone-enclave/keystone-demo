@@ -1,0 +1,13 @@
+diff --git a/src/libsodium/randombytes/salsa20/randombytes_salsa20_random.c b/src/libsodium/randombytes/salsa20/randombytes_salsa20_random.c
+index 79916eab..2c275c83 100644
+--- a/src/libsodium/randombytes/salsa20/randombytes_salsa20_random.c
++++ b/src/libsodium/randombytes/salsa20/randombytes_salsa20_random.c
+@@ -78,6 +78,8 @@ BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
+ # endif
+ #endif
+ 
++#undef SYS_getrandom
++
+ typedef struct Salsa20RandomGlobal_ {
+     int           initialized;
+     int           random_data_source_fd;

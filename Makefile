@@ -2,6 +2,10 @@ ifndef KEYSTONE_SDK_DIR
 $(error KEYSTONE_SDK_DIR is not set)
 endif
 
+ifndef LIBSODIUM_CLIENT_DIR
+$(error LIBSODIUM_CLIENT_DIR is not set)
+endif
+
 CC = riscv64-unknown-linux-gnu-g++
 OBJCOPY = riscv64-unknown-linux-gnu-objcopy
 
@@ -14,17 +18,22 @@ SDK_INCLUDE_HOST_DIR = $(SDK_LIB_DIR)/host/include
 SDK_INCLUDE_EDGE_DIR = $(SDK_LIB_DIR)/edge/include
 SDK_INCLUDE_VERIFIER_DIR = $(SDK_LIB_DIR)/verifier
 
+SODC_INCLUDE_DIR = $(LIBSODIUM_CLIENT_DIR)/include
+SODC_LIB_DIR = $(LIBSODIUM_CLIENT_DIR)/.libs
+SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
+
+
 RUNTIME=eyrie-rt
 EHOST=enclave-host.riscv
-CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/
-LDFLAGS = -L$(SDK_LIB_DIR)
+CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
+LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
 
 APPS = server_eapp
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
 OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o dummy_client.o
 
-all:  $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) 
+all:  $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
 	$(foreach app, $(APPS),\
 		$(MAKE) -C $(app);\

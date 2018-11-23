@@ -3,7 +3,7 @@ $(error KEYSTONE_SDK_DIR is not set)
 endif
 
 ifndef LIBSODIUM_DIR
-$(error LIBSODIUM is not set)
+$(error LIBSODIUM_DIR is not set)
 endif
 
 APP = server_eapp
