@@ -17,6 +17,13 @@ void ocall_print_value(unsigned long val){
   return;
 }
 
+void ocall_send_report(char* buffer, size_t len){
+
+  ocall(OCALL_SEND_REPORT, buffer, len, 0, 0);
+
+  return;  
+}
+
 unsigned long ocall_print_buffer(char* data, size_t data_len){
 
   unsigned long retval;

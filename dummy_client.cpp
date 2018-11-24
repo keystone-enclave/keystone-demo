@@ -4,6 +4,9 @@
 unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];
 unsigned char client_sk[crypto_kx_SECRETKEYBYTES];
 unsigned char server_pk[crypto_kx_PUBLICKEYBYTES];
+unsigned char rx[crypto_kx_SESSIONKEYBYTES];
+unsigned char tx[crypto_kx_SESSIONKEYBYTES];
+
 
 
 void dummy_client_init(){
@@ -23,6 +26,35 @@ void* dummy_client_pubkey(){
 }
 
 void dummy_client_get_report(void* buffer){
+
+  Report report;
+  report.fromBytes((unsigned char*)buffer);
+  report.printJson();
+  if (report.verify())
+  {
+    printf("DC:Attestation report is valid\n");
+  }
+  else
+  {
+    printf("DC:Attestation report is NOT valid\n");
+  }
+
+  // TODO Error case
+
+  if(report.getDataSize() !=  crypto_kx_PUBLICKEYBYTES){
+    //  TODO ERROR
+    printf("DC: Bad report data sec size\n");
+  }
+
+  memcpy(server_pk, report.getDataSection(), crypto_kx_PUBLICKEYBYTES);
+
+  if(crypto_kx_client_session_keys(rx, tx, client_pk, client_sk, server_pk) != 0) {
+    // TODO ERROR
+    printf("DC: Bad session keygen\n");
+  }
+  
+  printf("DC: Keygen stage done\n");
+  
 }
 
 const char* longstr = "hello hello hello hello hello hello hello hello hello hello";

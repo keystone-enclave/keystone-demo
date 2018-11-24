@@ -11,7 +11,7 @@ int edge_init(Keystone* enclave){
   enclave->registerOcallDispatch(incoming_call_dispatch);
   register_call(OCALL_PRINT_BUFFER, print_buffer_wrapper);
   register_call(OCALL_PRINT_VALUE, print_value_wrapper);
-  register_call(OCALL_COPY_REPORT, copy_report_wrapper);
+  register_call(OCALL_SEND_REPORT, send_report_wrapper);
   register_call(OCALL_WAIT_FOR_MESSAGE, wait_for_message_wrapper);
   register_call(OCALL_WAIT_FOR_CLIENT_PUBKEY, wait_for_client_pubkey_wrapper);
 
@@ -70,7 +70,7 @@ void print_value_wrapper(void* buffer)
   return;
 }
 
-void copy_report_wrapper(void* buffer)
+void send_report_wrapper(void* buffer)
 {
 
   /* For now we assume the call struct is at the front of the shared
@@ -86,7 +86,7 @@ void copy_report_wrapper(void* buffer)
     return;
   }
   
-  copy_report((void*)data_section);
+  send_report((void*)data_section);
 
   edge_call->return_data.call_status = CALL_STATUS_OK;
 

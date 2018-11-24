@@ -24,7 +24,7 @@ void* wait_for_client_pubkey(){
 }
 
 
-/* Buffer must be free'd after this */
+/* TODO Buffer must be free'd after this */
 encl_message_t wait_for_message(){
 
   size_t len;
@@ -38,30 +38,9 @@ encl_message_t wait_for_message(){
   return message;
 }
 
-void print_hex(void* buffer, size_t len)
+void send_report(void* buffer)
 {
-  int i;
-  for(i = 0; i < len; i+=sizeof(uintptr_t))
-  {
-    printf("%.16lx ", *((uintptr_t*) ((uintptr_t)buffer + i)));
-  }
-  printf("\n");
-}
-
-void copy_report(void* buffer)
-{
-  Report report;
-  report.fromBytes((unsigned char*)buffer);
-
-  report.printJson();
-  if (report.verify((void*) "data", 4))
-  {
-    printf("Attestation report is valid\n");
-  }
-  else
-  {
-    printf("Attestation report is not valid\n");
-  }
+  dummy_client_get_report(buffer);
 }
 
 int main(int argc, char** argv)
