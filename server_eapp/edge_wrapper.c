@@ -46,3 +46,8 @@ void ocall_wait_for_client_pubkey(unsigned char* pk, size_t len){
 
   return;
 }
+
+void ocall_send_reply(unsigned char* data, size_t len){
+  ocall(OCALL_SEND_REPLY, data, len, 0, 0);
+  return;
+}

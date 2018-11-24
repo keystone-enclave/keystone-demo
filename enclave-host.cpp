@@ -16,7 +16,7 @@ void print_value(unsigned long val){
 }
 
 void send_reply(void* data, size_t len){
-  printf("GOT A MESSAGE FROM ENCLAVE\n");
+  dummy_client_read_reply((unsigned char*)data, len);
 }
 
 void* wait_for_client_pubkey(){

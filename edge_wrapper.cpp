@@ -14,7 +14,8 @@ int edge_init(Keystone* enclave){
   register_call(OCALL_SEND_REPORT, send_report_wrapper);
   register_call(OCALL_WAIT_FOR_MESSAGE, wait_for_message_wrapper);
   register_call(OCALL_WAIT_FOR_CLIENT_PUBKEY, wait_for_client_pubkey_wrapper);
-
+  register_call(OCALL_SEND_REPLY, send_reply_wrapper);
+    
   edge_call_init_internals((uintptr_t)enclave->getSharedBuffer(),
 			   enclave->getSharedBufferSize());
 }
@@ -31,7 +32,6 @@ void print_buffer_wrapper(void* buffer)
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
-  
   ret_val = print_buffer((char*)call_args);
 
   // We are done with the data section for args, use as return region

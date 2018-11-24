@@ -62,21 +62,46 @@ const char* longstr = "hello hello hello hello hello hello hello hello hello hel
 void* dummy_client_generate_message(size_t* len){
   /* Generate plaintext */
   size_t datalen = strlen(longstr)+1; 
-  calc_message_t* calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen);
+  calc_message_t* calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES);
   calc_msg->msg_type = CALC_MSG_WORDCOUNT;
   calc_msg->len = datalen;
   memcpy(calc_msg->msg, (void*)longstr, calc_msg->len);
   size_t totalsize = calc_msg->len + sizeof(calc_message_t);
 
-  *len = totalsize;
-
-
-
+  /* Encrypt */
+  dummy_client_box((unsigned char*)calc_msg, totalsize, len);
   return (void*)calc_msg;
+}
+
+void dummy_client_box(unsigned char* buffer, size_t size, size_t* finalsize){
+  unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+size]);
+  randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
+
+  *finalsize = size + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES;
   
+  if(crypto_secretbox_easy(buffer, buffer, size, nonceptr, tx) != 0){
+    printf("DC: secretbox failed\n");
+  }
   
 }
 
-int dummy_client_read_reply(){
+void dummy_client_unbox(unsigned char* buffer, size_t len){
+
+  size_t clen = len - crypto_secretbox_NONCEBYTES;
+  unsigned char* nonceptr = &(buffer[clen]);
+  if (crypto_secretbox_open_easy(buffer, buffer, clen, nonceptr, rx) != 0){
+    printf("DC: unbox failed\n");
+  }
+
+  return;
+}
+
+int dummy_client_read_reply(unsigned char* data, size_t len){
+
+  dummy_client_unbox(data, len);
+
+  int* replyval = (int*)data;
+
+  printf("DC: enclave said string was %i words\n",*replyval);
   
 }

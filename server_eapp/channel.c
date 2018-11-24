@@ -21,10 +21,9 @@ void channel_init(){
 
 }
 
-void channel_establish(unsigned char* sent_client_pk){
+void channel_establish(){
 
   /* Ask libsodium to generate session keys based on the recv'd pk */
-  memcpy(client_pk, sent_client_pk, crypto_kx_PUBLICKEYBYTES);
 
   if(crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk) != 0) {
     ocall_print_buffer("Keygen2 failed\n",16);
@@ -37,7 +36,8 @@ int channel_recv(unsigned char* msg_buffer, size_t len){
   /* We store the nonce at the end of the ciphertext buffer for easy
      access */
   size_t clen = len - crypto_secretbox_NONCEBYTES;
-  unsigned char* nonceptr = &(msg_buffer[crypto_secretbox_MACBYTES+len]);
+  unsigned char* nonceptr = &(msg_buffer[clen]);
+
   if (crypto_secretbox_open_easy(msg_buffer, msg_buffer, clen, nonceptr, rx) != 0){
     //TODO: Drop message
     ocall_print_buffer("BAD MSG\n",9);
