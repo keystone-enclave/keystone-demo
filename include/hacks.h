@@ -14,7 +14,7 @@
  * getrandom only.
  */
 #define EAPP_ERR_RET 5
-#define BAD_CALL(fn) void fn(void){ocall_print_buffer(#fn,8);EAPP_RETURN(EAPP_ERR_RET);}
+#define BAD_CALL(fn) void fn(void){ocall_print_buffer(#fn);EAPP_RETURN(EAPP_ERR_RET);}
 
 int dummy_errno = 0;
 
@@ -50,7 +50,7 @@ size_t remaining_bytes;
 unsigned char* entropy_bytes;
 
 void magic_random_init(){
-  ocall_print_buffer("NOT USING REAL RANDOMNESS: TEST ONLY\n",37);
+  ocall_print_buffer("NOT USING REAL RANDOMNESS: TEST ONLY\n");
   entropy_bytes = (unsigned char*)malloc(512);
   if(!entropy_bytes){
     EAPP_RETURN(EAPP_ERR_RET);

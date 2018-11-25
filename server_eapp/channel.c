@@ -10,12 +10,13 @@ void channel_init(){
   randombytes_set_implementation(&randombytes_salsa20_implementation);
 
   if(sodium_init() < 0 ){
+    ocall_print_buffer("SE: Sodium init failed, exiting\n");
     EAPP_RETURN(1);
   }
 
   /* Generate our keys */
   if(crypto_kx_keypair(server_pk, server_sk) != 0){
-    ocall_print_buffer("Keygen1 failed\n",16);
+    ocall_print_buffer("SE: Unable to generate keypair, exiting\n");
     EAPP_RETURN(1);
   }
 
@@ -26,7 +27,7 @@ void channel_establish(){
   /* Ask libsodium to generate session keys based on the recv'd pk */
 
   if(crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk) != 0) {
-    ocall_print_buffer("Keygen2 failed\n",16);
+    ocall_print_buffer("SE: Unable to generate seesion keys, exiting\n");
     EAPP_RETURN(1);
   }
 
@@ -39,8 +40,7 @@ int channel_recv(unsigned char* msg_buffer, size_t len){
   unsigned char* nonceptr = &(msg_buffer[clen]);
 
   if (crypto_secretbox_open_easy(msg_buffer, msg_buffer, clen, nonceptr, rx) != 0){
-    //TODO: Drop message
-    ocall_print_buffer("BAD MSG\n",9);
+    ocall_print_buffer("SE: Invalid message, ignoring\n");
     return -1;
   }
 
@@ -58,7 +58,7 @@ void channel_send(unsigned char* msg, size_t len, unsigned char* ctx){
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
   
   if(crypto_secretbox_easy(ctx, msg, len, nonceptr, tx) != 0){
-    ocall_print_buffer("Channel2 failed\n",17);
+    ocall_print_buffer("SE: Unable to encrypt message, exiting\n");
     EAPP_RETURN(1);
   }
 

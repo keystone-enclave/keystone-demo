@@ -24,10 +24,10 @@ void ocall_send_report(char* buffer, size_t len){
   return;  
 }
 
-unsigned long ocall_print_buffer(char* data, size_t data_len){
+unsigned long ocall_print_buffer(char* data){
 
   unsigned long retval;
-  ocall(OCALL_PRINT_BUFFER, data, data_len, &retval ,sizeof(unsigned long));
+  ocall(OCALL_PRINT_BUFFER, data, strlen(data)+1, &retval ,sizeof(unsigned long));
 
   return retval;
 }

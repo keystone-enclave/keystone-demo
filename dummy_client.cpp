@@ -7,7 +7,8 @@ unsigned char server_pk[crypto_kx_PUBLICKEYBYTES];
 unsigned char rx[crypto_kx_SESSIONKEYBYTES];
 unsigned char tx[crypto_kx_SESSIONKEYBYTES];
 
-
+int msg_count;
+#define MAX_MSGS 50
 
 void dummy_client_init(){
 
@@ -19,6 +20,8 @@ void dummy_client_init(){
     printf("SODIUM KX INIT FAILURE\n");
     exit(-1);
   }
+
+  msg_count = 0;
 }
 
 void* dummy_client_pubkey(){
@@ -61,13 +64,24 @@ const char* longstr = "hello hello hello hello hello hello hello hello hello hel
 
 void* dummy_client_generate_message(size_t* len){
   /* Generate plaintext */
-  size_t datalen = strlen(longstr)+1; 
-  calc_message_t* calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES);
-  calc_msg->msg_type = CALC_MSG_WORDCOUNT;
-  calc_msg->len = datalen;
-  memcpy(calc_msg->msg, (void*)longstr, calc_msg->len);
-  size_t totalsize = calc_msg->len + sizeof(calc_message_t);
+  calc_message_t* calc_msg;
+  size_t totalsize;
+  if(msg_count < MAX_MSGS){
+    size_t datalen = strlen(longstr)+1; 
+    calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + datalen + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES);
+    calc_msg->msg_type = CALC_MSG_WORDCOUNT;
+    calc_msg->len = datalen;
+    memcpy(calc_msg->msg, (void*)longstr, calc_msg->len);
+    totalsize = calc_msg->len + sizeof(calc_message_t);
 
+    msg_count++;
+  }
+  else{
+    calc_msg = (calc_message_t*)malloc(sizeof(calc_message_t) + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES);
+    calc_msg->msg_type = CALC_MSG_EXIT;
+    calc_msg->len = 0;
+    totalsize = sizeof(calc_message_t);
+  }    
   /* Encrypt */
   dummy_client_box((unsigned char*)calc_msg, totalsize, len);
   return (void*)calc_msg;
