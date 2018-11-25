@@ -23,8 +23,6 @@ void* wait_for_client_pubkey(){
   return dummy_client_pubkey();
 }
 
-
-/* TODO Buffer must be free'd after this */
 encl_message_t wait_for_message(){
 
   size_t len;
