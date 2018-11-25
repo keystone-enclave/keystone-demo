@@ -33,7 +33,7 @@ void channel_establish(){
 
 }
 
-int channel_recv(unsigned char* msg_buffer, size_t len){
+int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
   /* We store the nonce at the end of the ciphertext buffer for easy
      access */
   size_t clen = len - crypto_secretbox_NONCEBYTES;
@@ -44,6 +44,8 @@ int channel_recv(unsigned char* msg_buffer, size_t len){
     return -1;
   }
 
+  *datalen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
+  
   return 0;
 }
 

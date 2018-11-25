@@ -40,10 +40,8 @@ edge_data_t ocall_wait_for_message(){
   return msg;
 }
 
-// TODO failure case
 void ocall_wait_for_client_pubkey(unsigned char* pk, size_t len){
   ocall(OCALL_WAIT_FOR_CLIENT_PUBKEY, NULL, 0, pk, len);
-
   return;
 }
 

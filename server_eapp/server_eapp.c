@@ -24,7 +24,8 @@ void handle_messages(){
   while(1){
     edge_data_t msg = ocall_wait_for_message();
     calc_message_t* calc_msg = malloc(msg.size);
-
+    size_t wordmsg_len;
+    
     if(calc_msg == NULL){
       ocall_print_buffer("SE: Message too large to store, ignoring\n");
       continue;
@@ -32,7 +33,7 @@ void handle_messages(){
     
     copy_from_shared(calc_msg, msg.offset, msg.size);
 
-    if( channel_recv((unsigned char*)calc_msg, msg.size) != 0){
+    if( channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
       continue;
     }
 
@@ -41,13 +42,11 @@ void handle_messages(){
       EAPP_RETURN(0);
     }
 
-    // TODO safety check on len
-    int val = word_count(calc_msg->msg);
+    int val = word_count(calc_msg->msg, wordmsg_len);
 
     // Done with the message, free it
     free(calc_msg);
     
-    // TODO free memory
     size_t reply_size =channel_get_send_size(sizeof(int));
     unsigned char* reply_buffer = malloc(reply_size);
     if(reply_buffer == NULL){
