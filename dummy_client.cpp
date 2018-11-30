@@ -1,4 +1,6 @@
-
+#include <string>
+#include <iostream>
+#include <fstream>
 #include "dummy_client.h"
 #include "sodium.h"
 unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];
@@ -10,6 +12,8 @@ unsigned char tx[crypto_kx_SESSIONKEYBYTES];
 calc_message_t* calc_msg;
 int msg_count;
 #define MAX_MSGS 50
+
+int dummy_client_hash_only;
 
 void dummy_client_exit(){
   printf("DC: Fatal errot, exiting\n");
@@ -39,11 +43,25 @@ void dummy_client_get_report(void* buffer){
 
   Report report;
   report.fromBytes((unsigned char*)buffer);
-  report.printJson();
-  if (report.verify())
+  std::cout << "Enclave hash: " << report.BytesToHex(report.getEnclaveHash(),MDSIZE) << std::endl;
+  if(dummy_client_hash_only){
+    exit(0);
+  }
+  byte expected_hash[MDSIZE];
+  std::ifstream f("expected.hash");
+  if(!f.good()){
+    printf("DC: Unable to find expected.hash file\n");
+    dummy_client_exit();
+  }
+  std::string tmp;
+  std::getline(f, tmp);
+  report.HexToBytes(expected_hash, MDSIZE, tmp);
+  f.close();
+
+  //TODO pubkey?
+  if (report.verify(expected_hash))
   {
-    printf("DC:Attestation report is valid\n");
-    //TODO must verify hash as well!
+    printf("DC:Attestation signature and enclave hash are valid\n");
   }
   else
   {

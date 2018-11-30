@@ -6,6 +6,8 @@
 #include "calc_msg.h"
 #include "report.h"
 
+extern int dummy_client_hash_only;
+
 void dummy_client_init();
 void* dummy_client_pubkey();
 void* dummy_client_generate_message( size_t* len);

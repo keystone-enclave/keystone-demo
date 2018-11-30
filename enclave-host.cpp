@@ -5,6 +5,11 @@
 #include "encl_message.h"
 #include "dummy_client.h"
 
+/* We hardcode these for demo purposes. */
+const char* enc_path = "server_eapp.eapp_riscv";
+const char* runtime_path = "eyrie-rt";
+
+
 unsigned long print_buffer(char* str){
   printf("Enclave said: %s",str);
   return strlen(str);
@@ -43,12 +48,15 @@ void send_report(void* buffer)
 
 int main(int argc, char** argv)
 {
-  if(argc != 3)
-  {
-    printf("Usage: %s <eapp> <runtime>\n", argv[0]);
-    return 0;
-  }
 
+  if(argc >= 2 && strncmp("hash",argv[1], 4) == 0){
+    printf("HOST: Getting enclave hash only\n");
+    dummy_client_hash_only = 1;
+  }
+  else{
+    dummy_client_hash_only = 0;
+  }
+  
   /* Wait for network connection */
   dummy_client_init();
   
@@ -57,7 +65,10 @@ int main(int argc, char** argv)
 
   params.setEnclaveEntry(0x1000);
 
-  enclave.init(argv[1], argv[2], params);
+  if(enclave.init(enc_path, runtime_path, params) != KEYSTONE_SUCCESS){
+    printf("HOST: Unable to start enclave\n");
+    exit(-1);
+  }
 
   edge_init(&enclave);
 

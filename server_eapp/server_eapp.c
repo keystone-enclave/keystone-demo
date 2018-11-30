@@ -34,6 +34,7 @@ void handle_messages(){
     copy_from_shared(calc_msg, msg.offset, msg.size);
 
     if( channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
+      free(calc_msg);
       continue;
     }
 
