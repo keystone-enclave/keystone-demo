@@ -3,6 +3,11 @@
 #include <fstream>
 #include "dummy_client.h"
 #include "sodium.h"
+
+#include "test_dev_key.h"
+#include "enclave_expected_hash.h"
+#include "sm_expected_hash.h"
+
 unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];
 unsigned char client_sk[crypto_kx_SECRETKEYBYTES];
 unsigned char server_pk[crypto_kx_PUBLICKEYBYTES];
@@ -47,19 +52,10 @@ void dummy_client_get_report(void* buffer){
   if(dummy_client_hash_only){
     exit(0);
   }
-  byte expected_hash[MDSIZE];
-  std::ifstream f("expected.hash");
-  if(!f.good()){
-    printf("DC: Unable to find expected.hash file\n");
-    dummy_client_exit();
-  }
-  std::string tmp;
-  std::getline(f, tmp);
-  report.HexToBytes(expected_hash, MDSIZE, tmp);
-  f.close();
 
-  //TODO pubkey?
-  if (report.verify(expected_hash))
+  if (report.verify(enclave_expected_hash,
+		    sm_expected_hash,
+		    _sanctum_dev_public_key))
   {
     printf("DC:Attestation signature and enclave hash are valid\n");
   }
