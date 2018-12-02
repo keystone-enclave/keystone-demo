@@ -61,6 +61,7 @@ void dummy_client_get_report(void* buffer){
   }
   else
   {
+    report.printJson();
     printf("DC:Attestation report is NOT valid\n");
     dummy_client_exit();
   }
