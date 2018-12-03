@@ -81,9 +81,11 @@ void trusted_client_get_report(void* buffer){
   channel_ready = 1;
 }
 
-byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
+#define MSG_BLOCKSIZE 32
+#define BLOCK_UP(len) (len+(MSG_BLOCKSIZE - (len%MSG_BLOCKSIZE)))
 
-  *finalsize = size + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES;
+byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
+  *finalsize = BLOCK_UP(size) + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES;
   byte* buffer = (byte*)malloc(*finalsize);
   if(buffer == NULL){
     printf("[TC] NOMEM for msg\n");
@@ -91,10 +93,17 @@ byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
   }
 
   memcpy(buffer, msg, size);
+  
+  size_t buf_padded_len;
+  if (sodium_pad(&buf_padded_len, buffer, size, MSG_BLOCKSIZE, BLOCK_UP(size)) != 0) {
+    printf("[TC] Unable to pad message, exiting\n");
+    trusted_client_exit();
+  }
+
   unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+size]);
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
 
-  if(crypto_secretbox_easy(buffer, buffer, size, nonceptr, tx) != 0){
+  if(crypto_secretbox_easy(buffer, buffer, BLOCK_UP(size), nonceptr, tx) != 0){
     printf("[TC] secretbox failed\n");
     trusted_client_exit();
   }
@@ -110,6 +119,15 @@ void trusted_client_unbox(unsigned char* buffer, size_t len){
     printf("[TC] unbox failed\n");
     trusted_client_exit();
   }
+
+  size_t ptlen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
+  size_t unpad_len;
+  if( sodium_unpad(&unpad_len, buffer, ptlen, MSG_BLOCKSIZE) != 0){
+    printf("[TC] Invalid message padding, ignoring\n");
+    trusted_client_exit();
+  }    
+
+  
   return;
 }
 

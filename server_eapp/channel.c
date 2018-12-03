@@ -33,6 +33,9 @@ void channel_establish(){
 
 }
 
+#define MSG_BLOCKSIZE 32
+#define BLOCK_UP(len) (len+(MSG_BLOCKSIZE - (len%MSG_BLOCKSIZE)))
+
 int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
   /* We store the nonce at the end of the ciphertext buffer for easy
      access */
@@ -44,22 +47,38 @@ int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
     return -1;
   }
 
-  *datalen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
+  size_t ptlen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
+  
+  size_t unpad_len;
+  if( sodium_unpad(&unpad_len, msg_buffer, ptlen, MSG_BLOCKSIZE) != 0){
+    ocall_print_buffer("SE: Invalid message padding, ignoring\n");
+    return -1;
+  }
+
+  *datalen = unpad_len;
   
   return 0;
 }
 
+
 size_t channel_get_send_size(size_t len){
-  return crypto_secretbox_MACBYTES + len + crypto_secretbox_NONCEBYTES;
+  return crypto_secretbox_MACBYTES + BLOCK_UP(len) + crypto_secretbox_NONCEBYTES;
 }
 
 void channel_send(unsigned char* msg, size_t len, unsigned char* ctx){
   /* We store the nonce at the end of the ciphertext buffer for easy
      access */
-  unsigned char* nonceptr = &(ctx[crypto_secretbox_MACBYTES+len]);
+
+  size_t buf_padded_len;
+  if (sodium_pad(&buf_padded_len, msg, len, MSG_BLOCKSIZE, BLOCK_UP(len)) != 0) {
+    ocall_print_buffer("SE: Unable to pad message, exiting\n");
+    EAPP_RETURN(1);
+  }
+
+  unsigned char* nonceptr = &(ctx[crypto_secretbox_MACBYTES+buf_padded_len]);
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
   
-  if(crypto_secretbox_easy(ctx, msg, len, nonceptr, tx) != 0){
+  if(crypto_secretbox_easy(ctx, msg, buf_padded_len, nonceptr, tx) != 0){
     ocall_print_buffer("SE: Unable to encrypt message, exiting\n");
     EAPP_RETURN(1);
   }
