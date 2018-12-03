@@ -21,7 +21,7 @@ void print_value_wrapper(void* buffer);
 void print_value(unsigned long val);
 
 void send_report_wrapper(void* buffer);
-void send_report(void* shared_buffer);
+void send_report(void* shared_buffer, size_t len);
 
 void wait_for_message_wrapper(void* buffer);
 encl_message_t wait_for_message();

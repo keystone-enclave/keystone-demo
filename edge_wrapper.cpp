@@ -86,7 +86,7 @@ void send_report_wrapper(void* buffer)
     return;
   }
   
-  send_report((void*)data_section);
+  send_report((void*)data_section, sizeof(report_t));
 
   edge_call->return_data.call_status = CALL_STATUS_OK;
 
