@@ -77,7 +77,7 @@ void trusted_client_get_report(void* buffer){
     trusted_client_exit();
   }
   
-  printf("[TC] Keygen stage done\n");
+  printf("[TC] Session keys established\n");
   channel_ready = 1;
 }
 
@@ -119,7 +119,7 @@ int trusted_client_read_reply(unsigned char* data, size_t len){
 
   int* replyval = (int*)data;
 
-  printf("[TC] enclave said string was %i words long\n",*replyval);
+  printf("[TC] Enclave said string was %i words long\n",*replyval);
   
 }
 

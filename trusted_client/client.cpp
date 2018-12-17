@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  printf("Connected to enclave host!\n");
+  printf("[TC] Connected to enclave host!\n");
 
   /* Establish channel */
   trusted_client_init();
@@ -76,10 +76,11 @@ int main(int argc, char *argv[])
   
   /* Send/recv messages */
   for(;;){
-    printf("Either type message for remote word count, or q to quit\n");
+    printf("Either type message for remote word count, or q to quit\n> ");
     memset(local_buffer, 0, BUFFERLEN);
     fgets((char*)local_buffer, BUFFERLEN, stdin);
-    
+    printf("\n");
+
     /* Handle quit */
     if(local_buffer[0] == 'q' && (local_buffer[1] == '\0' || local_buffer[1] == '\n')){
       send_exit_message();

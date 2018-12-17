@@ -36,16 +36,17 @@ byte* recv_buffer(size_t* len){
 }
 
 unsigned long print_buffer(char* str){
-  printf("Enclave said: %s",str);
+  printf("[SE] %s",str);
   return strlen(str);
 }
 
 void print_value(unsigned long val){
-  printf("Enclave said value: %u\n",val);
+  printf("[SE] value: %u\n",val);
   return;
 }
 
 void send_reply(void* data, size_t len){
+  printf("[EH] Sending encrypted reply\n");
   send_buffer((byte*)data, len);
 }
 
@@ -60,6 +61,8 @@ encl_message_t wait_for_message(){
   
   void* buffer = recv_buffer(&len);
 
+  printf("[EH] Got an encrypted message\n");
+  
   /* This happens here */
   encl_message_t message;
   message.host_ptr = buffer;
