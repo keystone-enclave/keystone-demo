@@ -54,8 +54,8 @@ void trusted_client_get_report(void* buffer){
   report.printJson();
 
   if (report.verify(enclave_expected_hash,
-		    sm_expected_hash,
-		    _sanctum_dev_public_key))
+  		    sm_expected_hash,
+  		    _sanctum_dev_public_key))
   {
     printf("[TC]Attestation signature and enclave hash are valid\n");
   }
@@ -85,7 +85,8 @@ void trusted_client_get_report(void* buffer){
 #define BLOCK_UP(len) (len+(MSG_BLOCKSIZE - (len%MSG_BLOCKSIZE)))
 
 byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
-  *finalsize = BLOCK_UP(size) + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES;
+  size_t size_padded = BLOCK_UP(size);
+  *finalsize = size_padded + crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES;
   byte* buffer = (byte*)malloc(*finalsize);
   if(buffer == NULL){
     printf("[TC] NOMEM for msg\n");
@@ -95,15 +96,15 @@ byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
   memcpy(buffer, msg, size);
   
   size_t buf_padded_len;
-  if (sodium_pad(&buf_padded_len, buffer, size, MSG_BLOCKSIZE, BLOCK_UP(size)) != 0) {
+  if (sodium_pad(&buf_padded_len, buffer, size, MSG_BLOCKSIZE, size_padded) != 0) {
     printf("[TC] Unable to pad message, exiting\n");
     trusted_client_exit();
   }
 
-  unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+size]);
+  unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+buf_padded_len]);
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
 
-  if(crypto_secretbox_easy(buffer, buffer, BLOCK_UP(size), nonceptr, tx) != 0){
+  if(crypto_secretbox_easy(buffer, buffer, buf_padded_len, nonceptr, tx) != 0){
     printf("[TC] secretbox failed\n");
     trusted_client_exit();
   }

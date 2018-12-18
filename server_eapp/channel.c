@@ -65,20 +65,23 @@ size_t channel_get_send_size(size_t len){
   return crypto_secretbox_MACBYTES + BLOCK_UP(len) + crypto_secretbox_NONCEBYTES;
 }
 
-void channel_send(unsigned char* msg, size_t len, unsigned char* ctx){
+void channel_send(unsigned char* msg, size_t len, unsigned char* buffer){
   /* We store the nonce at the end of the ciphertext buffer for easy
      access */
 
   size_t buf_padded_len;
-  if (sodium_pad(&buf_padded_len, msg, len, MSG_BLOCKSIZE, BLOCK_UP(len)) != 0) {
+
+  memcpy(buffer, msg, len);
+  
+  if (sodium_pad(&buf_padded_len, buffer, len, MSG_BLOCKSIZE, BLOCK_UP(len)) != 0) {
     ocall_print_buffer("SE: Unable to pad message, exiting\n");
     EAPP_RETURN(1);
   }
 
-  unsigned char* nonceptr = &(ctx[crypto_secretbox_MACBYTES+buf_padded_len]);
+  unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+buf_padded_len]);
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
   
-  if(crypto_secretbox_easy(ctx, msg, buf_padded_len, nonceptr, tx) != 0){
+  if(crypto_secretbox_easy(buffer, buffer, buf_padded_len, nonceptr, tx) != 0){
     ocall_print_buffer("SE: Unable to encrypt message, exiting\n");
     EAPP_RETURN(1);
   }
