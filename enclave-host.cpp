@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 #include <iostream>
 #include <fstream>
 #include <sys/types.h>
@@ -8,9 +6,16 @@
 #include <netdb.h> 
 #include <unistd.h>
 #include <cstdio>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <cstring>
 #include "keystone.h"
 #include "edge_wrapper.h"
 #include "encl_message.h"
+
+#define PRINT_MESSAGE_BUFFERS 1
 
 /* We hardcode these for demo purposes. */
 const char* enc_path = "server_eapp.eapp_riscv";
@@ -35,6 +40,17 @@ byte* recv_buffer(size_t* len){
   return reply;
 }
 
+void print_hex_data(unsigned char* data, size_t len){
+  unsigned int i;
+  std::string str;
+  for(i=0; i<len; i+=1){
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(2) << std::hex << (uintptr_t)data[i];
+    str += ss.str();
+  }
+  printf("%s\n",str.c_str());
+}
+
 unsigned long print_buffer(char* str){
   printf("[SE] %s",str);
   return strlen(str);
@@ -46,7 +62,10 @@ void print_value(unsigned long val){
 }
 
 void send_reply(void* data, size_t len){
-  printf("[EH] Sending encrypted reply\n");
+  printf("[EH] Sending encrypted reply:\n");
+
+  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)data, len);
+
   send_buffer((byte*)data, len);
 }
 
@@ -61,7 +80,8 @@ encl_message_t wait_for_message(){
   
   void* buffer = recv_buffer(&len);
 
-  printf("[EH] Got an encrypted message\n");
+  printf("[EH] Got an encrypted message:\n");
+  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
   
   /* This happens here */
   encl_message_t message;

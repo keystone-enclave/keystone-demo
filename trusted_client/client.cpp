@@ -36,11 +36,18 @@ byte* recv_buffer(size_t* len){
 
 int main(int argc, char *argv[])
 {
+  int ignore_valid = 0;
   if(argc < 2) {
     printf("Usage %s hostname\n", argv[0]);
     exit(-1);
   }
 
+  if(argc >= 3){
+    if(strcmp(argv[2],"--ignore-valid") == 0){
+      ignore_valid =1;
+    }
+  }
+  
   fd_sock = socket(AF_INET, SOCK_STREAM, 0);
   if(fd_sock < 0){
     printf("No socket\n");
@@ -66,7 +73,7 @@ int main(int argc, char *argv[])
   
   size_t report_size;
   byte* report_buffer = recv_buffer(&report_size);
-  trusted_client_get_report(report_buffer);
+  trusted_client_get_report(report_buffer, ignore_valid);
   free(report_buffer);
 
   /* Send pubkey */

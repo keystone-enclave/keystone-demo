@@ -27,19 +27,18 @@ void handle_messages(){
     size_t wordmsg_len;
     
     if(calc_msg == NULL){
-      ocall_print_buffer("SE: Message too large to store, ignoring\n");
+      ocall_print_buffer("Message too large to store, ignoring\n");
       continue;
     }
     
     copy_from_shared(calc_msg, msg.offset, msg.size);
-
-    if( channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
+    if(channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
       free(calc_msg);
       continue;
     }
 
     if(calc_msg->msg_type == CALC_MSG_EXIT){
-      ocall_print_buffer("SE: Received exit, exiting\n");
+      ocall_print_buffer("Received exit, exiting\n");
       EAPP_RETURN(0);
     }
 
@@ -51,7 +50,7 @@ void handle_messages(){
     size_t reply_size =channel_get_send_size(sizeof(int));
     unsigned char* reply_buffer = malloc(reply_size);
     if(reply_buffer == NULL){
-      ocall_print_buffer("SE: Reply too large to allocate, no reply sent\n");
+      ocall_print_buffer("Reply too large to allocate, no reply sent\n");
       continue;
     }
 

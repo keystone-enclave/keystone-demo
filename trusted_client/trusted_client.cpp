@@ -47,7 +47,7 @@ byte* trusted_client_pubkey(size_t* len){
   return (byte*)client_pk;
 }
 
-void trusted_client_get_report(void* buffer){
+void trusted_client_get_report(void* buffer, int ignore_valid){
 
   Report report;
   report.fromBytes((unsigned char*)buffer);
@@ -57,12 +57,17 @@ void trusted_client_get_report(void* buffer){
   		    sm_expected_hash,
   		    _sanctum_dev_public_key))
   {
-    printf("[TC]Attestation signature and enclave hash are valid\n");
+    printf("[TC] Attestation signature and enclave hash are valid\n");
   }
   else
   {
-    printf("[TC]Attestation report is NOT valid\n");
-    trusted_client_exit();
+    printf("[TC] Attestation report is NOT valid\n");
+    if( ignore_valid ){
+      printf("[TC] Ignore Validation was set, CONTINUING WITH INVALID REPORT\n");
+    }
+    else{
+      trusted_client_exit();
+    }
   }
 
   if(report.getDataSize() !=  crypto_kx_PUBLICKEYBYTES){
