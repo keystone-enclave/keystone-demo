@@ -11,6 +11,7 @@
 % ./autogen.sh
 % ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
 % cd ../keystone-demo
+% cp ../riscv-pk/hash/sm_expected_hash.h include/ # Or the relevant expected sm hash for your platform, this is only valid for qemu testing
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make trusted_client.riscv
 % cp enclave-host.riscv trusted_client.riscv server_eapp/server_eapp.eapp_riscv ../keystone/sdk/bin
