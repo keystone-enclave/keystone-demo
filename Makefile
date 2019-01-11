@@ -26,14 +26,14 @@ SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp
 
 RUNTIME=eyrie-rt
-EHOST= enclave-host.riscv #enclave-host-dummy-client.riscv
+EHOST= enclave-host.riscv
 CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
 LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
 
 APPS = server_eapp
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
-OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o #dummy_client.o
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
 
 TCLIENT_OBJS = $(patsubst %.cpp, %.o,$(TCLIENT))
 

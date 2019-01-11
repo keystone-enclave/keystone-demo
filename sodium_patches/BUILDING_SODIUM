@@ -1,5 +1,5 @@
 We need to build 2 different copies of libsodium, one for running on
-the dummy_client or trusted_client, and one for the enclave app.
+the trusted_client, and one for the enclave app.
 
 I'm currently working off libsodium stable branch, commit:
 4917510626c55c1f199ef7383ae164cf96044aea
