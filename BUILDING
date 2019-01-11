@@ -13,3 +13,9 @@
 % cd ../keystone-demo
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make trusted_client.riscv
+% cp enclave-host.riscv trusted_client.riscv server_eapp/server_eapp.eapp_riscv ../keystone/sdk/bin
+% cd ../keystone/sdk
+% make copy-tests
+% cd ..
+% scripts/run-qemu.sh
+% ./test-runner.riscv server_eapp.eapp_riscv eyrie-rt 
