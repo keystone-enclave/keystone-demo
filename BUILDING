@@ -1,0 +1,15 @@
+% cd ..
+% git clone https://github.com/jedisct1/libsodium.git libsodium-server
+% cd libsodium-server
+% patch -p1 < ../keystone-demo/sodium_patches/configure.ac.patch
+% ./autogen.soh
+% ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+% make
+% cd ..
+% git clone https://github.com/jedisct1/libsodium.git libsodium-client
+% cd libsodium-client
+% ./autogen.sh
+% ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+% cd ../keystone-demo
+% KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
+% KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make trusted_client.riscv
