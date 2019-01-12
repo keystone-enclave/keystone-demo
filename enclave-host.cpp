@@ -47,8 +47,16 @@ void print_hex_data(unsigned char* data, size_t len){
     std::stringstream ss;
     ss << std::setfill('0') << std::setw(2) << std::hex << (uintptr_t)data[i];
     str += ss.str();
+    if(i>0 && (i+1)%8 == 0){
+      if((i+1)%32 == 0){
+	str += "\n";
+      }
+      else{
+	str += " ";
+      }
+    }
   }
-  printf("%s\n",str.c_str());
+  printf("%s\n\n",str.c_str());
 }
 
 unsigned long print_buffer(char* str){
