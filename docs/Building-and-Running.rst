@@ -16,7 +16,7 @@ up-to-date build instructions in the subdirectory in the demo
 repository. We suggest keeping two copies of the ``libsodium``
 repository to make modifications easier.
 
-See sodium_patches/BUILDING_SODIUM
+See docs/Building-libsodium.rst
 
 Building for qemu
 -----------------
