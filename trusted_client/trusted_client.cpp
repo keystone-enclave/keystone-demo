@@ -51,7 +51,7 @@ void trusted_client_get_report(void* buffer, int ignore_valid){
 
   Report report;
   report.fromBytes((unsigned char*)buffer);
-  report.printJson();
+  report.printPretty();
 
   if (report.verify(enclave_expected_hash,
   		    sm_expected_hash,

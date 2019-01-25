@@ -26,10 +26,26 @@ void send_buffer(byte* buffer, size_t len){
 }
 
 byte* recv_buffer(size_t* len){
-  read(fd_sock, local_buffer, sizeof(size_t));
+  ssize_t n_read = read(fd_sock, local_buffer, sizeof(size_t));
+  if(n_read != sizeof(size_t)){
+    // Shutdown
+    printf("[TC] Invalid message header\n");
+    trusted_client_exit();
+  }
   size_t reply_size = *(size_t*)local_buffer;
   byte* reply = (byte*)malloc(reply_size);
-  read(fd_sock, reply, reply_size);
+  if(reply == NULL){
+    // Shutdown
+    printf("[TC] Message too large\n");
+    trusted_client_exit();
+  }
+  n_read = read(fd_sock, reply, reply_size);
+  if(n_read != reply_size){
+    printf("[TC] Bad message size\n");
+    // Shutdown
+    trusted_client_exit();
+  }
+
   *len = reply_size;
   return reply;
 }
@@ -84,8 +100,9 @@ int main(int argc, char *argv[])
   /* Send/recv messages */
   for(;;){
     printf("Either type message for remote word count, or q to quit\n> ");
+    // For now we set a limit here due to malloc configs on app
     memset(local_buffer, 0, BUFFERLEN);
-    fgets((char*)local_buffer, BUFFERLEN, stdin);
+    fgets((char*)local_buffer, 300, stdin);
     printf("\n");
 
     /* Handle quit */
