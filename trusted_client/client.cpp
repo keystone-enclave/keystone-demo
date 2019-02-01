@@ -100,9 +100,9 @@ int main(int argc, char *argv[])
   /* Send/recv messages */
   for(;;){
     printf("Either type message for remote word count, or q to quit\n> ");
-    // For now we set a limit here due to malloc configs on app
+
     memset(local_buffer, 0, BUFFERLEN);
-    fgets((char*)local_buffer, 300, stdin);
+    fgets((char*)local_buffer, BUFFERLEN-1, stdin);
     printf("\n");
 
     /* Handle quit */
