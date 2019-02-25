@@ -62,7 +62,7 @@ expect -exact "\r
 send -- "./enclave-host.riscv >sout.log 2>serr.log &\r"
 expect -exact "\r
 \[01;32mroot@ucbvax\[00m:\[01;34m~\[00m# "
-send -- "./trusted_client.riscv 127.0.0.1 --ingnore-valid>cout.log 2>cerr.log\r"
+send -- "echo q | ./trusted_client.riscv 127.0.0.1 --ingnore-valid>cout.log 2>cerr.log\r"
 expect "*\r
 \[01;32mroot@ucbvax\[00m:\[01;34m~\[00m#*"
 send -- "poweroff\r"
