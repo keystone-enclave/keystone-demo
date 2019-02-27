@@ -45,11 +45,8 @@ if {$force_conservative} {
 set timeout -1
 cd ../
 spawn ./scripts/run-qemu.sh
-match_max 100000
 expect "*ucbvax login: "
 send -- "root\r"
-expect -exact "root\r"
-expect -exact "\r
 Password: "
 send -- "busybear\r"
 expect "*\[01;32mroot@ucbvax\[00m:\[01;34m~\[00m# "
