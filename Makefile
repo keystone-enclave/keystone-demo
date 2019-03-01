@@ -59,28 +59,11 @@ $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
 getandsethash:
-	rm -rf $(LOGS_DIR)
-	./scripts/extract_hash.sh
-	mkdir -p $(LOGS_DIR)
-	mkdir -p $(MOUNT_DIR)
-	sudo mount $(DISK_IMAGE) $(MOUNT_DIR)
-	sudo rsync -a $(MOUNT_DIR)/root/ $(LOGS_DIR)/tmp
-	rm -rf $(MOUNT_DIR)/root/*.log
-	sudo umount $(MOUNT_DIR)
-	rmdir $(MOUNT_DIR)
-	mv $(LOGS_DIR)/tmp/*.log $(LOGS_DIR)
-	rm -rf $(LOGS_DIR)/tmp
-	awk '/=== Security Monitor ===/,/=== Enclave Application ===/' $(LOGS_DIR)/cout.log  | grep "Hash: " | cut -c 7- > include/sm.hash
-	cd include && ./genhash.sh self sm
-	rm -f include/sm.hash
-	awk '/=== Enclave Application ===/,/-- Device pubkey --/' $(LOGS_DIR)/cout.log  | grep "Hash: " | cut -c 7- > include/enclave.hash
-	cd include && ./genhash.sh self enclave
-	rm -f include/enclave.hash
-	rm -rf $(LOGS_DIR)
+	./scripts/get_attestation.sh ./include
 
 copysdk copysdk1:
 	cp -u *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
-	cd $(KEYSTONE_SDK_DIR) && make copy-tests
+	cd $(KEYSTONE_SDK_DIR)/.. && make hifive
 
 clean:
 	rm -f *.o *.riscv
