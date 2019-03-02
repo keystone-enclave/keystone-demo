@@ -27,7 +27,7 @@ SODC_LIB_DIR = $(LIBSODIUM_CLIENT_DIR)/.libs
 SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 
 
-TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp
+TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 
 RUNTIME=eyrie-rt
 EHOST= enclave-host.riscv
@@ -60,7 +60,6 @@ $(OBJS): %.o: %.cpp
 
 getandsethash:
 	./scripts/get_attestation.sh ./include
-	rm -rf trusted_client.riscv # We need to remove the trusted_client so that we can rebuild it with the correct values
 
 copysdk copysdk1:
 	yes | cp -rf *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
