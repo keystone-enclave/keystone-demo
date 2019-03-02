@@ -67,6 +67,13 @@ SM_HASH=$(awk '/=== Security Monitor ===/,/=== Enclave Application ===/' extract
 EAPP_HASH=$(awk '/=== Enclave Application ===/,/-- Device pubkey --/' extract_hash.log  | grep "Hash: " | cut -c 7-)
 rm -f extract_hash.log
 cd $output_path
-ls
+if [ "${SM_HASH}xxx" = "xxx" ]; then
+    echo Could not extract the SM_HASH!;
+    exit
+fi
+if [ "${EAPP_HASH}xxx" = "xxx" ]; then
+    echo Could not extract the EAPP_HASH!;
+    exit
+fi
 genhash sm $SM_HASH
 genhash enclave $EAPP_HASH

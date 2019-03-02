@@ -60,9 +60,10 @@ $(OBJS): %.o: %.cpp
 
 getandsethash:
 	./scripts/get_attestation.sh ./include
+	rm -rf trusted_client.riscv # We need to remove the trusted_client so that we can rebuild it with the correct values
 
 copysdk copysdk1:
-	cp -u *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
+	yes | cp -rf *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
 	cd $(KEYSTONE_SDK_DIR)/.. && make hifive
 
 clean:
