@@ -1,7 +1,3 @@
-LOGS_DIR = logs
-DISK_IMAGE = ../busybear-linux/busybear.bin
-MOUNT_DIR = ./tmp_busybear
-
 ifndef KEYSTONE_SDK_DIR
 $(error KEYSTONE_SDK_DIR is not set)
 endif
