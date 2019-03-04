@@ -37,9 +37,7 @@ OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
 
 TCLIENT_OBJS = $(patsubst %.cpp, %.o,$(TCLIENT))
 
-all: makeall copysdk getandsethash trusted_client.riscv copysdk1
-
-makeall: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
+all: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
 	$(foreach app, $(APPS),\
 		$(MAKE) -C $(app);\
@@ -54,11 +52,13 @@ trusted_client.riscv: $(TCLIENT)
 $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
+build-hash-using-qemu: all copysdk getandsethash trusted_client.riscv	
+
 getandsethash:
 	./scripts/get_attestation.sh ./include
 
-copysdk copysdk1:
-	yes | cp -rf *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
+copysdk:
+	cp *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
 	cd $(KEYSTONE_SDK_DIR)/.. && make hifive
 
 clean:
