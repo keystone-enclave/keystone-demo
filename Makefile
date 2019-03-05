@@ -1,5 +1,9 @@
+ifndef KEYSTONE_DIR
+$(error KEYSTONE_DIR is not set)
+endif
+
 ifndef KEYSTONE_SDK_DIR
-$(error KEYSTONE_SDK_DIR is not set)
+KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
 endif
 
 ifndef LIBSODIUM_CLIENT_DIR
@@ -23,7 +27,7 @@ SODC_LIB_DIR = $(LIBSODIUM_CLIENT_DIR)/.libs
 SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 
 
-TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp
+TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 
 RUNTIME=eyrie-rt
 EHOST= enclave-host.riscv
@@ -37,7 +41,7 @@ OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
 
 TCLIENT_OBJS = $(patsubst %.cpp, %.o,$(TCLIENT))
 
-all:  $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
+all: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
 	$(foreach app, $(APPS),\
 		$(MAKE) -C $(app);\
@@ -52,8 +56,19 @@ trusted_client.riscv: $(TCLIENT)
 $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
+build-hash-using-qemu: all copysdk getandsethash trusted_client.riscv	
+
+getandsethash:
+	./scripts/get_attestation.sh ./include
+
+copysdk:
+	cp *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
+	cd $(KEYSTONE_SDK_DIR)/.. && make hifive
+
 clean:
 	rm -f *.o *.riscv
 	$(foreach app, $(APPS), \
 		$(MAKE) -C $(app) clean; \
 	)
+
+.PHONY: getandsethash clean
