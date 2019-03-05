@@ -1,5 +1,9 @@
+ifndef KEYSTONE_DIR
+$(error KEYSTONE_DIR is not set)
+endif
+
 ifndef KEYSTONE_SDK_DIR
-$(error KEYSTONE_SDK_DIR is not set)
+KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
 endif
 
 ifndef LIBSODIUM_CLIENT_DIR
