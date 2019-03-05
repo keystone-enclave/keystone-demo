@@ -1,20 +1,12 @@
 #!/bin/bash
 
-# build_files_dir=$1
 output_path=$1
 
-# if [ "${build_files_dir}xxx" = "xxx" ]; then
-#     echo You must set the output path!;
-#     exit
-# fi
 if [ "${output_path}xxx" = "xxx" ]; then
     echo You must set the directory which will hold the build files to copy over!;
     exit
 fi
-if [ -z "$KEYSTONE_SDK_DIR" -a "${KEYSTONE_SDK_DIR+xxx}" = "xxx" ]; then
-    echo You MUST set KEYSTONE_SDK_DIR.;
-    exit
-fi
+
 if [ -z "$KEYSTONE_DIR" -a "${KEYSTONE_DIR+xxx}" = "xxx" ]; then
     echo You MUST set KEYSTONE_DIR.;
     exit
