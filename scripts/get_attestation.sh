@@ -20,16 +20,6 @@ if [ -z "$KEYSTONE_DIR" -a "${KEYSTONE_DIR+xxx}" = "xxx" ]; then
     exit
 fi
 
-copysdk () {
-    curdir="$(ls -1)"
-
-    cp -u $build_files_dir $KEYSTONE_SDK_DIR/bin/
-
-	cd $KEYSTONE_DIR
-    make hifive
-	cd $curdir
-}
-
 genhash () {
     echo "Generating hash ($2) for \"$1\""
     echo $2 | xxd -r -p - > $1_expected_hash
@@ -41,17 +31,17 @@ extracthash () {
     expect_commands='
     set timeout 60
     cd $::env(KEYSTONE_DIR)
-    spawn ./scripts/run-hifive-qemu.sh
+    spawn ./scripts/run-hifive-qemu.sh # This is temporary until the main kestone repo gets updated.
     expect "*?ogin" { send "root\r" }
     expect "*?assword" { send "sifive\r" }
 
     expect "# " { send "insmod keystone-driver.ko\r" }
 
 
-    expect "# " { send "ifdown lo && ifup lo #>/dev/null 2>/dev/null\r" }
+    expect "# " { send "ifdown lo && ifup lo\r" }
     expect "# " { send "chmod +x enclave-host.riscv trusted_client.riscv\r" }
-    expect "# " { send "./enclave-host.riscv & #>sout.log 2>serr.log\r" }
-    expect "# " { send "echo q | ./trusted_client.riscv 127.0.0.1 --ingnore-valid #>cout.log 2>cerr.log\r" }
+    expect "# " { send "./enclave-host.riscv &\r" }
+    expect "# " { send "echo q | ./trusted_client.riscv 127.0.0.1 --ingnore-valid\r" }
 
 
     expect "# " { send "poweroff\r" }
