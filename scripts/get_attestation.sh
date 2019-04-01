@@ -23,7 +23,7 @@ extracthash () {
     expect_commands='
     set timeout 60
     cd $::env(KEYSTONE_DIR)
-    spawn ./scripts/run-hifive-qemu.sh # This is temporary until the main kestone repo gets updated.
+    spawn ./scripts/run-qemu.sh # This is temporary until the main kestone repo gets updated.
     expect "*?ogin" { send "root\r" }
     expect "*?assword" { send "sifive\r" }
 

@@ -1,7 +1,7 @@
 #ifndef _EDGE_WRAPPER_H_
 #define _EDGE_WRAPPER_H_
 
-#include <edge_call.hpp>
+#include <edge_call.h>
 #include "keystone.h"
 
 #define crypto_kx_PUBLICKEYBYTES 32
@@ -9,7 +9,7 @@
 
 typedef struct encl_message_t {
   void* host_ptr;
-  size_t len;  
+  size_t len;
 } encl_message_t;
 
 int edge_init(Keystone* enclave);

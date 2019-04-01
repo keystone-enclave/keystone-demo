@@ -38,13 +38,15 @@ set -e
 mkdir -p libsodium_builds
 cd libsodium_builds
 
+HOST_STR=riscv64-unknown-linux-gnu
+
 # Clone, checkout, and build the server libsodium
 git clone https://github.com/jedisct1/libsodium.git libsodium_server
 cd libsodium_server
 git checkout 4917510626c55c1f199ef7383ae164cf96044aea
 patch -p1 < $DEMO_DIR/sodium_patches/configure.ac.patch
 ./autogen.sh
-./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+./configure --host=${HOST_STR} --disable-ssp --disable-asm --without-pthreads CC=musl-gcc
 make
 export LIBSODIUM_DIR=$(pwd)/src/libsodium/
 cd ..
@@ -53,7 +55,7 @@ cd ..
 git clone https://github.com/jedisct1/libsodium.git libsodium_client
 cd libsodium_client
 git checkout 4917510626c55c1f199ef7383ae164cf96044aea
-./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+./configure --host=${HOST_STR} --disable-ssp --disable-asm --without-pthreads
 make
 export LIBSODIUM_CLIENT_DIR=$(pwd)/src/libsodium/
 cd ..
