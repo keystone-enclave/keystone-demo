@@ -24,7 +24,7 @@ void print_buffer_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
@@ -55,7 +55,7 @@ void print_value_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
@@ -75,7 +75,7 @@ void send_report_wrapper(void* buffer)
 
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t data_section;
   unsigned long ret_val;
@@ -98,7 +98,7 @@ void wait_for_message_wrapper(void* buffer)
 
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
@@ -125,7 +125,7 @@ void send_reply_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
@@ -143,7 +143,7 @@ void send_reply_wrapper(void* buffer)
 void wait_for_client_pubkey_wrapper(void* buffer){
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   unsigned long ret_val;
 

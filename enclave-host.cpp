@@ -15,11 +15,13 @@
 #include "edge_wrapper.h"
 #include "encl_message.h"
 
-#define PRINT_MESSAGE_BUFFERS 1
+#define PRINT_MESSAGE_BUFFERS 0
 
 /* We hardcode these for demo purposes. */
 const char* enc_path = "server_eapp.eapp_riscv";
 const char* runtime_path = "eyrie-rt";
+
+unsigned long c_got,c_send;
 
 #define PORTNUM 8067
 int fd_clientsock;
@@ -70,6 +72,8 @@ void print_value(unsigned long val){
 }
 
 void send_reply(void* data, size_t len){
+  asm volatile ("rdcycle %0" : "=r" (c_send));
+  printf("processingtime: %lu\r\n",c_send-c_got);
   printf("[EH] Sending encrypted reply:\n");
 
   if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)data, len);
@@ -95,6 +99,7 @@ encl_message_t wait_for_message(){
   encl_message_t message;
   message.host_ptr = buffer;
   message.len = len;
+  asm volatile ("rdcycle %0" : "=r" (c_got));
   return message;
 }
 

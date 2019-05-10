@@ -3,7 +3,7 @@ $(error KEYSTONE_DIR is not set)
 endif
 
 ifndef KEYSTONE_SDK_DIR
-KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
+export KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
 endif
 
 ifndef LIBSODIUM_CLIENT_DIR
@@ -26,6 +26,9 @@ SODC_INCLUDE_DIR = $(LIBSODIUM_CLIENT_DIR)/include
 SODC_LIB_DIR = $(LIBSODIUM_CLIENT_DIR)/.libs
 SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 
+SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
+SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
+
 
 TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 
@@ -47,8 +50,11 @@ all: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 		$(MAKE) -C $(app);\
 	)
 
+aestest: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
+	$(CC) -static -I/home/dkohlbre/keystone/keystone/keystone-demo/libsodium_builds/libsodium_client/test/quirks/ $(CCFLAGS) -L$(SDK_LIB_DIR) -L$(SOD_LIB_DIR) -o aestest /home/dkohlbre/keystone/keystone/keystone-demo/libsodium_builds/libsodium_server/test/default/aead_aes256gcm.c $(SOD_LIB)
+
 trusted_client.riscv: $(TCLIENT)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(SDK_VERIFIER_LIB) $(SODC_LIB) 
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(SDK_VERIFIER_LIB) $(SODC_LIB)
 
 %.a:
 	make -C $(SDK_LIB_DIR)
@@ -56,7 +62,7 @@ trusted_client.riscv: $(TCLIENT)
 $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
-build-hash-using-qemu: all copysdk getandsethash trusted_client.riscv	
+build-hash-using-qemu: all copysdk getandsethash trusted_client.riscv
 
 getandsethash:
 	./scripts/get_attestation.sh ./include

@@ -20,9 +20,9 @@ void attest_and_establish_channel(){
 }
 
 void handle_messages(){
-
+  struct edge_data msg;
   while(1){
-    edge_data_t msg = ocall_wait_for_message();
+    ocall_wait_for_message(&msg);
     calc_message_t* calc_msg = malloc(msg.size);
     size_t wordmsg_len;
 
