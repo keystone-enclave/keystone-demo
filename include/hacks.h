@@ -24,7 +24,6 @@ BAD_CALL( close )
 //BAD_CALL( __errno_location ) We actually interpose on this, see below
 BAD_CALL( fcntl )
 BAD_CALL( __fxstat )
-BAD_CALL( fstat )
 //BAD_CALL( __memcpy_chk )
 void * __memcpy_chk(void * dest, const void * src, size_t len, size_t destlen) {
   if(destlen < len)

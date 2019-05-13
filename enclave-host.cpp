@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include <unistd.h>
 #include <cstdio>
 #include <sstream>
@@ -28,7 +28,7 @@ byte local_buffer[BUFFERLEN];
 
 void send_buffer(byte* buffer, size_t len){
   write(fd_clientsock, &len, sizeof(size_t));
-  write(fd_clientsock, buffer, len);  
+  write(fd_clientsock, buffer, len);
 }
 
 byte* recv_buffer(size_t* len){
@@ -85,12 +85,12 @@ void* wait_for_client_pubkey(){
 encl_message_t wait_for_message(){
 
   size_t len;
-  
+
   void* buffer = recv_buffer(&len);
 
   printf("[EH] Got an encrypted message:\n");
   if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
-  
+
   /* This happens here */
   encl_message_t message;
   message.host_ptr = buffer;
@@ -105,7 +105,7 @@ void send_report(void* buffer, size_t len)
 
 
 void init_network_wait(){
-  
+
   int fd_sock;
   struct sockaddr_in server_addr;
 
@@ -140,11 +140,9 @@ int main(int argc, char** argv)
   init_network_wait();
 
   printf("[EH] Got connection from remote client\n");
-  
+
   Keystone enclave;
   Params params;
-
-  params.setEnclaveEntry(0x1000);
 
   if(enclave.init(enc_path, runtime_path, params) != KEYSTONE_SUCCESS){
     printf("HOST: Unable to start enclave\n");
@@ -158,4 +156,3 @@ int main(int argc, char** argv)
 
   return 0;
 }
-

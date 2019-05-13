@@ -6,7 +6,7 @@ server/applcation and client on a RISC-V platform (ex: qemu). Please
 ensure you have cloned keystone completely and that you have fully
 built the sdk tests and run them successfully in qemu.
 
-You must set KEYSTONE_SDK_DIR to the sdk/ directory of a built
+You must set KEYSTONE_DIR to the directory of a built
 keystone clone.
 
 If you have already started building libsodium/etc, it is not
@@ -18,12 +18,16 @@ then
     exit 0
 fi
 
+
+
 # Check location/tools
-if [[ ! -v KEYSTONE_SDK_DIR ]]
+if [[ ! -v KEYSTONE_DIR ]]
 then
-    echo "KEYSTONE_SDK_DIR not set! Please set this to the location of the SDK."
+    echo "KEYSTONE_DIR not set! Please set this to the location of the keystone checkout!"
     exit 0
 fi
+
+export KEYSTONE_SDK_DIR=$KEYSTONE_DIR/sdk
 
 if [[ ! -d $KEYSTONE_SDK_DIR/bin ]]
 then

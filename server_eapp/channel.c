@@ -27,9 +27,10 @@ void channel_establish(){
   /* Ask libsodium to generate session keys based on the recv'd pk */
 
   if(crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk) != 0) {
-    ocall_print_buffer("[C] Unable to generate seesion keys, exiting\n");
+    ocall_print_buffer("[C] Unable to generate session keys, exiting\n");
     EAPP_RETURN(1);
   }
+  ocall_print_buffer("[C] Successfully generated session keys.\n");
 
 }
 
@@ -41,13 +42,13 @@ int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
      access */
   size_t clen = len - crypto_secretbox_NONCEBYTES;
   unsigned char* nonceptr = &(msg_buffer[clen]);
-  
+
   if (crypto_secretbox_open_easy(msg_buffer, msg_buffer, clen, nonceptr, rx) != 0){
     ocall_print_buffer("[C] Invalid message, ignoring\n");
     return -1;
   }
   size_t ptlen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
-  
+
   size_t unpad_len;
   if( sodium_unpad(&unpad_len, msg_buffer, ptlen, MSG_BLOCKSIZE) != 0){
     ocall_print_buffer("[C] Invalid message padding, ignoring\n");
@@ -55,7 +56,7 @@ int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
   }
 
   *datalen = unpad_len;
-  
+
   return 0;
 }
 
@@ -71,7 +72,7 @@ void channel_send(unsigned char* msg, size_t len, unsigned char* buffer){
   size_t buf_padded_len;
 
   memcpy(buffer, msg, len);
-  
+
   if (sodium_pad(&buf_padded_len, buffer, len, MSG_BLOCKSIZE, BLOCK_UP(len)) != 0) {
     ocall_print_buffer("[C] Unable to pad message, exiting\n");
     EAPP_RETURN(1);
@@ -79,7 +80,7 @@ void channel_send(unsigned char* msg, size_t len, unsigned char* buffer){
 
   unsigned char* nonceptr = &(buffer[crypto_secretbox_MACBYTES+buf_padded_len]);
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
-  
+
   if(crypto_secretbox_easy(buffer, buffer, buf_padded_len, nonceptr, tx) != 0){
     ocall_print_buffer("[C] Unable to encrypt message, exiting\n");
     EAPP_RETURN(1);
