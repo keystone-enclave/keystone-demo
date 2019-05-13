@@ -8,6 +8,7 @@
 #include "hacks.h"
 #include "channel.h"
 
+
 void attest_and_establish_channel(){
   // TODO sizeof report
   char buffer[2048];
@@ -20,17 +21,17 @@ void attest_and_establish_channel(){
 }
 
 void handle_messages(){
-
+  struct edge_data msg;
   while(1){
-    edge_data_t msg = ocall_wait_for_message();
+    ocall_wait_for_message(&msg);
     calc_message_t* calc_msg = malloc(msg.size);
     size_t wordmsg_len;
-    
+
     if(calc_msg == NULL){
       ocall_print_buffer("Message too large to store, ignoring\n");
       continue;
     }
-    
+
     copy_from_shared(calc_msg, msg.offset, msg.size);
     if(channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
       free(calc_msg);
@@ -46,7 +47,7 @@ void handle_messages(){
 
     // Done with the message, free it
     free(calc_msg);
-    
+
     size_t reply_size =channel_get_send_size(sizeof(int));
     unsigned char* reply_buffer = malloc(reply_size);
     if(reply_buffer == NULL){
@@ -60,7 +61,7 @@ void handle_messages(){
     free(reply_buffer);
 
   }
-  
+
 }
 
 void EAPP_ENTRY eapp_entry(){

@@ -32,12 +32,9 @@ unsigned long ocall_print_buffer(char* data){
   return retval;
 }
 
-edge_data_t ocall_wait_for_message(){
+void ocall_wait_for_message(struct edge_data *msg){
 
-  edge_data_t msg;
-  ocall(OCALL_WAIT_FOR_MESSAGE, NULL, 0, &msg, sizeof(edge_data_t));
-
-  return msg;
+  ocall(OCALL_WAIT_FOR_MESSAGE, NULL, 0, msg, sizeof(struct edge_data));
 }
 
 void ocall_wait_for_client_pubkey(unsigned char* pk, size_t len){

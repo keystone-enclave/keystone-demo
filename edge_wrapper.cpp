@@ -15,7 +15,7 @@ int edge_init(Keystone* enclave){
   register_call(OCALL_WAIT_FOR_MESSAGE, wait_for_message_wrapper);
   register_call(OCALL_WAIT_FOR_CLIENT_PUBKEY, wait_for_client_pubkey_wrapper);
   register_call(OCALL_SEND_REPLY, send_reply_wrapper);
-    
+
   edge_call_init_internals((uintptr_t)enclave->getSharedBuffer(),
 			   enclave->getSharedBufferSize());
 }
@@ -24,11 +24,12 @@ void print_buffer_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
-  if(edge_call_args_ptr(edge_call, &call_args) != 0){
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
@@ -38,7 +39,7 @@ void print_buffer_wrapper(void* buffer)
   // TODO safety check?
   uintptr_t data_section = edge_call_data_ptr();
 
-  memcpy((void*)data_section, &ret_val, sizeof(unsigned long));  
+  memcpy((void*)data_section, &ret_val, sizeof(unsigned long));
 
   if( edge_call_setup_ret(edge_call, (void*) data_section, sizeof(unsigned long))){
     edge_call->return_data.call_status = CALL_STATUS_BAD_PTR;
@@ -46,7 +47,7 @@ void print_buffer_wrapper(void* buffer)
   else{
     edge_call->return_data.call_status = CALL_STATUS_OK;
   }
-      
+
   return;
 
 }
@@ -55,15 +56,16 @@ void print_value_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
-  if(edge_call_args_ptr(edge_call, &call_args) != 0){
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
-  
+
   print_value(*(unsigned long*)call_args);
 
   edge_call->return_data.call_status = CALL_STATUS_OK;
@@ -75,7 +77,7 @@ void send_report_wrapper(void* buffer)
 
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t data_section;
   unsigned long ret_val;
@@ -85,7 +87,7 @@ void send_report_wrapper(void* buffer)
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
-  
+
   send_report((void*)data_section, sizeof(report_t));
 
   edge_call->return_data.call_status = CALL_STATUS_OK;
@@ -98,11 +100,12 @@ void wait_for_message_wrapper(void* buffer)
 
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
-  if(edge_call_args_ptr(edge_call, &call_args) != 0){
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
@@ -125,25 +128,26 @@ void send_reply_wrapper(void* buffer)
 {
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   uintptr_t call_args;
   unsigned long ret_val;
-  if(edge_call_args_ptr(edge_call, &call_args) != 0){
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
     edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
-  
+
   send_reply((void*)call_args, edge_call->call_arg_size);
   edge_call->return_data.call_status = CALL_STATUS_OK;
-      
+
   return;
 }
 
 void wait_for_client_pubkey_wrapper(void* buffer){
   /* For now we assume the call struct is at the front of the shared
    * buffer. This will have to change to allow nested calls. */
-  struct edge_call_t* edge_call = (struct edge_call_t*)buffer;
+  struct edge_call* edge_call = (struct edge_call*)buffer;
 
   unsigned long ret_val;
 
@@ -155,13 +159,13 @@ void wait_for_client_pubkey_wrapper(void* buffer){
   uintptr_t data_section = edge_call_data_ptr();
 
   memcpy((void*)data_section, pubkey, crypto_kx_PUBLICKEYBYTES);
-  
+
   if( edge_call_setup_ret(edge_call, (void*) data_section, sizeof(unsigned long))){
     edge_call->return_data.call_status = CALL_STATUS_BAD_PTR;
   }
   else{
     edge_call->return_data.call_status = CALL_STATUS_OK;
   }
-      
+
   return;
 }

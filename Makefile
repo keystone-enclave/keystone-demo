@@ -3,7 +3,7 @@ $(error KEYSTONE_DIR is not set)
 endif
 
 ifndef KEYSTONE_SDK_DIR
-KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
+export KEYSTONE_SDK_DIR = $(KEYSTONE_DIR)/sdk
 endif
 
 ifndef LIBSODIUM_CLIENT_DIR
@@ -25,6 +25,9 @@ SDK_INCLUDE_VERIFIER_DIR = $(SDK_LIB_DIR)/verifier
 SODC_INCLUDE_DIR = $(LIBSODIUM_CLIENT_DIR)/include
 SODC_LIB_DIR = $(LIBSODIUM_CLIENT_DIR)/.libs
 SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
+
+SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
+SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
 
 TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
