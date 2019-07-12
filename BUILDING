@@ -3,6 +3,7 @@
 % cd ..
 % git clone https://github.com/jedisct1/libsodium.git libsodium-server
 % cd libsodium-server
+% git checkout 4917510626c55c1f199ef7383ae164cf96044aea
 % patch -p1 < ../keystone-demo/sodium_patches/configure.ac.patch
 % ./autogen.sh
 % ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
@@ -10,6 +11,7 @@
 % cd ..
 % git clone https://github.com/jedisct1/libsodium.git libsodium-client
 % cd libsodium-client
+% git checkout 4917510626c55c1f199ef7383ae164cf96044aea
 % ./autogen.sh
 % ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
 % make
