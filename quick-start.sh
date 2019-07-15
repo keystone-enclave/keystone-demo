@@ -78,5 +78,5 @@ cp *.riscv server_eapp/server_eapp.eapp_riscv $KEYSTONE_SDK_DIR/bin/
 # Done!
 
 echo -e "************ Demo binaries built and copied into sdk bins directory. ***************
-Run 'make copy-tests' in the sdk directory and the demo will be
-available next time you start qemu!"
+            Run 'make' in the top-level of keystone, and the demo binaries should
+            be available in qemu next time you start it!"

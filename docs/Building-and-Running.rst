@@ -38,14 +38,14 @@ Running on qemu
 ---------------
 
 You'll first need to copy the relevant files into the qemu image. The
-easiest way to do this is to use the sdk's copy-tests functionality.
+easiest way to do this is to use the top-level make.
 
 ::
 
    cp *.riscv server_eapp/server_eapp.eapp_riscv ../sdk/bin/
-   cd ../sdk/
-   make copy-tests
-   cd ../keystone-demo
+   cd ../../
+   make
+   cd keystone-demo
 
 The easiest way to run the demo on qemu is to run both the enclave
 host and the trusted client on qemu, and communicate over loopback.
