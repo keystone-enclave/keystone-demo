@@ -51,7 +51,7 @@ all: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 	)
 
 trusted_client.riscv: $(TCLIENT)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(SDK_VERIFIER_LIB) $(SODC_LIB) 
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(SDK_VERIFIER_LIB) $(SODC_LIB)
 
 %.a:
 	make -C $(SDK_LIB_DIR)
@@ -59,14 +59,14 @@ trusted_client.riscv: $(TCLIENT)
 $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
-build-hash-using-qemu: all copysdk getandsethash trusted_client.riscv	
+build-hash-using-qemu: all copybins getandsethash trusted_client.riscv
 
 getandsethash:
 	./scripts/get_attestation.sh ./include
 
-copysdk:
-	cp *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/bin/
-	cd $(KEYSTONE_SDK_DIR)/.. && make hifive
+copybins:
+	cp *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/
+	cd $(KEYSTONE_SDK_DIR)/.. && make
 
 clean:
 	rm -f *.o *.riscv

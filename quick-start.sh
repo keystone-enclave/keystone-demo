@@ -73,7 +73,7 @@ make
 make trusted_client.riscv
 
 # Copy the demo files into the sdk bins
-cp *.riscv server_eapp/server_eapp.eapp_riscv $KEYSTONE_SDK_DIR/bin/
+make copybins
 
 # Done!
 

@@ -20,9 +20,17 @@
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
 % KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make trusted_client.riscv
 
+# Copy binaries to the buildroot build
+
+% make copybins
+
+# Rebuild top-level keystone image so it has the binaries
+
+% cd../
+% make
+
 # Now start qemu and run the demo
 
-% cd ../
 % scripts/run-qemu.sh
 
 # login as root / busybear

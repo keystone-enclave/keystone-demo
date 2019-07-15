@@ -42,8 +42,8 @@ easiest way to do this is to use the top-level make.
 
 ::
 
-   cp *.riscv server_eapp/server_eapp.eapp_riscv ../sdk/bin/
-   cd ../../
+   cp *.riscv server_eapp/server_eapp.eapp_riscv ../buildroot_overlay/root/
+   cd ..
    make
    cd keystone-demo
 
