@@ -29,12 +29,6 @@ fi
 
 export KEYSTONE_SDK_DIR=$KEYSTONE_DIR/sdk
 
-if [[ ! -d $KEYSTONE_SDK_DIR/bin ]]
-then
-    echo "I can't find $KEYSTONE_SDK_DIR/bin, please ensure you've built all of keystone already."
-    exit 0
-fi
-
 DEMO_DIR=$(pwd)
 
 set -e
@@ -72,7 +66,7 @@ cp $KEYSTONE_SDK_DIR/../riscv-pk/hash/*.h include/
 make
 make trusted_client.riscv
 
-# Copy the demo files into the sdk bins
+# Copy the demo files
 make copybins
 
 # Done!
