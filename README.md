@@ -14,3 +14,13 @@ tests successfully.
 The demo will generally work on the master branch of Keystone, but
 will ALWAYS work on the dev branch. We suggest building the dev branch
 of Keystone if you have any issues with the demo on master.
+
+## Attestation Failures
+
+It is expected that the client will reject the attestation report from
+the host if you haven't regenerated the expected hashes for the SM and
+eapp.
+
+You can either use `make build-hash-using-qemu` to attempt a rebuild
+with new hashes or pass the `--ignore-valid` flag to the client for
+testing.

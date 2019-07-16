@@ -30,28 +30,34 @@ SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
 SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
 
-TCLIENT = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
+TCLIENT_SRCS = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
+TCLIENT = trusted_client.riscv
 
 RUNTIME=eyrie-rt
 EHOST= enclave-host.riscv
 CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
 LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
 
-APPS = server_eapp
+SERVER = server_eapp/server_eapp.eapp_riscv
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
 OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
 
-TCLIENT_OBJS = $(patsubst %.cpp, %.o,$(TCLIENT))
+all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
 
-all: $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
+$(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
-	$(foreach app, $(APPS),\
-		$(MAKE) -C $(app);\
-	)
 
-trusted_client.riscv: $(TCLIENT)
+.PHONY:
+$(SERVER):
+	$(MAKE) -C `dirname $(SERVER)`
+
+$(TCLIENT): $(TCLIENT_SRCS)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(SDK_VERIFIER_LIB) $(SODC_LIB)
+
+$(RUNTIME):
+	$(KEYSTONE_SDK_DIR)/rts/eyrie/build.sh
+	cp $(KEYSTONE_SDK_DIR)/rts/eyrie/eyrie-rt .
 
 %.a:
 	make -C $(SDK_LIB_DIR)
@@ -59,17 +65,19 @@ trusted_client.riscv: $(TCLIENT)
 $(OBJS): %.o: %.cpp
 	$(CC) $(CCFLAGS) -c $<
 
-build-hash-using-qemu: all copybins getandsethash trusted_client.riscv
+build-hash-using-qemu: all copybins getandsethash
 
 getandsethash:
 	./scripts/get_attestation.sh ./include
 
 copybins:
-	cp *.riscv server_eapp/server_eapp.eapp_riscv $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/
+	mkdir -p $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/keystone-demo/
+	cp *.riscv server_eapp/server_eapp.eapp_riscv eyrie-rt $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/keystone-demo/
 	cd $(KEYSTONE_SDK_DIR)/.. && make
 
 clean:
 	rm -f *.o *.riscv
+	rm -f eyrie-rt
 	$(foreach app, $(APPS), \
 		$(MAKE) -C $(app) clean; \
 	)
