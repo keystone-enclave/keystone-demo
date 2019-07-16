@@ -72,7 +72,7 @@ getandsethash:
 
 copybins:
 	mkdir -p $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
-	cp $(TCLIENT) $(HOST) $(SERVER) $(RUNTIME) $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
+	cp $(TCLIENT) $(EHOST) $(SERVER) $(RUNTIME) $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
 	cd $(KEYSTONE_DIR) && make
 
 clean:
