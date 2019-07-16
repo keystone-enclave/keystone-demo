@@ -26,23 +26,26 @@ simple.
 
 Set the required environement variables:
 
- - ``KEYSTONE_SDK_DIR``: should point to the base of the SDK repo
+ - ``KEYSTONE_DIR``: should point to the base of the Keystone checkout
  - ``LIBSODIUM_DIR`` : Should point to ``libsodium/src/libsodium/`` for the eapp targeted verion
  - ``LIBSODIUM_CLIENT_DIR`` : Should  point to ``libsodium/src/libsodium/`` for the client version
 
 You can build the regular version and remote trusted client with
-``make && make trusted_client.riscv``
+``make``.
 
 
 Running on qemu
 ---------------
 
 You'll first need to copy the relevant files into the qemu image. The
-easiest way to do this is to use the top-level make.
+easiest way to do this is to use ``make copybins``, which will copy
+binaries into the ``buildroot_overlay`` and rebuild the image.
 
+This can also be done manually
 ::
 
-   cp *.riscv server_eapp/server_eapp.eapp_riscv ../buildroot_overlay/root/
+   mkdir -p ../buildroot_overlay/root/keystone-demo
+   cp *.riscv server_eapp/server_eapp.eapp_riscv eyrie-rt ../buildroot_overlay/root/keystone-demo
    cd ..
    make
    cd keystone-demo
@@ -56,6 +59,7 @@ Our standard testing after starting qemu is:
 
    insmod keystone-driver.ko         # load the keystone kernel module (only for newest version)
    ifdown lo && ifup lo              # Setup the loopback device
+   cd keystone-demo/
    ./enclave-host.riscv &            # Background the server host
    ./trusted_client.riscv 127.0.0.1  # Start the client interactively connecting to localhost
 

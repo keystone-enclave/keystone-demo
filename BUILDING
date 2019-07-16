@@ -17,17 +17,11 @@
 % make
 % cd ../keystone-demo
 % cp ../riscv-pk/hash/sm_expected_hash.h include/ # Or the relevant expected sm hash for your platform, this is only valid for qemu testing
-% KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
-% KEYSTONE_SDK_DIR=`pwd`/../keystone/sdk LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make trusted_client.riscv
+% KEYSTONE_DIR=`pwd`/../keystone/ LIBSODIUM_DIR=`pwd`/../libsodium-server/src/libsodium LIBSODIUM_CLIENT_DIR=`pwd`/../libsodium-client/src/libsodium make
 
-# Copy binaries to the buildroot build
+# Copy binaries to the buildroot build and rebuild image
 
-% make copybins
-
-# Rebuild top-level keystone image so it has the binaries
-
-% cd../
-% make
+% KEYSTONE_DIR=`pwd`/../keystone/ make copybins
 
 # Now start qemu and run the demo
 
@@ -37,5 +31,6 @@
 
 % insmod keystone-driver.ko
 % ifdown lo && ifup lo
+% cd keystone-demo
 % ./enclave-host.riscv &
 % ./trusted_client.riscv 127.0.0.1
