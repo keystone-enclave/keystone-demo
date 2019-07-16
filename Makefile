@@ -11,7 +11,6 @@ $(error LIBSODIUM_CLIENT_DIR is not set)
 endif
 
 CC = riscv64-unknown-linux-gnu-g++
-OBJCOPY = riscv64-unknown-linux-gnu-objcopy
 
 SDK_LIB_DIR = $(KEYSTONE_SDK_DIR)/lib
 SDK_HOST_LIB = $(SDK_LIB_DIR)/libkeystone-host.a
@@ -32,13 +31,14 @@ SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
 TCLIENT_SRCS = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 TCLIENT = trusted_client.riscv
-
-RUNTIME=eyrie-rt
+RUNTIME = eyrie-rt
 EHOST= enclave-host.riscv
+SERVER = server_eapp/server_eapp.eapp_riscv
+
 CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
 LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
 
-SERVER = server_eapp/server_eapp.eapp_riscv
+
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
 OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
@@ -71,9 +71,9 @@ getandsethash:
 	./scripts/get_attestation.sh ./include
 
 copybins:
-	mkdir -p $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/keystone-demo/
-	cp *.riscv server_eapp/server_eapp.eapp_riscv eyrie-rt $(KEYSTONE_SDK_DIR)/../buildroot_overlay/root/keystone-demo/
-	cd $(KEYSTONE_SDK_DIR)/.. && make
+	mkdir -p $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
+	cp $(TCLIENT) $(HOST) $(SERVER) $(RUNTIME) $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
+	cd $(KEYSTONE_DIR) && make
 
 clean:
 	rm -f *.o *.riscv
