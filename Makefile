@@ -73,7 +73,7 @@ getandsethash:
 copybins:
 	mkdir -p $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
 	cp $(TCLIENT) $(EHOST) $(SERVER) $(RUNTIME) $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
-	cd $(KEYSTONE_DIR) && make
+	cd $(KEYSTONE_DIR) && make image
 
 clean:
 	rm -f *.o *.riscv
