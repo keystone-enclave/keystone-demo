@@ -7,7 +7,7 @@ $(error LIBSODIUM_DIR is not set)
 endif
 
 APP = server_eapp
-APP_C_SRCS= server_eapp.c edge_wrapper.c calculator.c channel.c
+APP_C_SRCS= server_eapp.c calculator.c channel.c eapp_func.c
 
 CC = riscv64-unknown-linux-gnu-gcc
 CFLAGS = -Wall -Werror
@@ -24,8 +24,13 @@ SOD_INCLUDE_DIR = $(LIBSODIUM_DIR)/include
 SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
 SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
-LDFLAGS = -static -L$(SDK_LIB_DIR) -L$(SOD_LIB_DIR)
-CFLAGS += -I$(SDK_INCLUDE_APP_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I../include -I$(SOD_INCLUDE_DIR)
+FLATCC_INCLUDE_DIR = $(FLATCC_DIR)/include
+FLATCC_LIB = $(KEYEDGE_LIB_DIR)/flatccrt.a
+KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/include
+KEYEDGE_LIB_DIR = $(KEYEDGE_DIR)/lib
+
+LDFLAGS = -static -L$(SDK_LIB_DIR) -L$(SOD_LIB_DIR) -L$(KEYEDGE_LIB_DIR)
+CFLAGS += -I$(SDK_INCLUDE_APP_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I../include -I../keyedge -I$(SOD_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(FLATCC_INCLUDE_DIR)
 
 APP_C_OBJS = $(patsubst %.c,%.o, $(APP_C_SRCS))
 APP_A_OBJS = $(patsubst %.s,%.o, $(APP_A_SRCS))
@@ -39,7 +44,7 @@ $(APP_C_OBJS): %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 $(APP_BIN): %.eapp_riscv : $(APP_C_OBJS) $(APP_A_OBJS) $(SDK_APP_LIB) $(SDK_EDGE_LIB) $(SOD_LIB)
-	$(LINK) $(LDFLAGS) -o $@ $^ -T $(APP_LDS)
+	$(LINK) $(LDFLAGS) -o $@ $^ $(FLATCC_LIB) -T $(APP_LDS)
 	chmod -x $@
 
 clean:

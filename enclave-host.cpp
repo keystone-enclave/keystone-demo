@@ -12,7 +12,7 @@
 #include <string>
 #include <cstring>
 #include "keystone.h"
-#include "edge_wrapper.h"
+#include "ocalls_host.h"
 #include "encl_message.h"
 
 #define PRINT_MESSAGE_BUFFERS 1
@@ -77,9 +77,9 @@ void send_reply(void* data, size_t len){
   send_buffer((byte*)data, len);
 }
 
-void* wait_for_client_pubkey(){
+pubkey* wait_for_client_pubkey(){
   size_t len;
-  return recv_buffer(&len);
+  return (pubkey*) recv_buffer(&len);
 }
 
 encl_message_t wait_for_message(){
@@ -149,8 +149,11 @@ int main(int argc, char** argv)
     exit(-1);
   }
 
-  edge_init(&enclave);
-
+  enclave.registerOcallDispatch(incoming_call_dispatch);
+  register_functions();
+  edge_call_init_internals((uintptr_t)enclave.getSharedBuffer(),
+    enclave.getSharedBufferSize());
+    
   int rval = enclave.run();
   printf("rval: %i\n",rval);
 

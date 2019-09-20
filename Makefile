@@ -28,6 +28,10 @@ SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
 SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
+FLATCC_INCLUDE_DIR = $(FLATCC_DIR)/include
+FLATCC_LIB = $(KEYEDGE_LIB_DIR)/flatccrt.a
+KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/include
+KEYEDGE_LIB_DIR = $(KEYEDGE_DIR)/lib
 
 TCLIENT_SRCS = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 TCLIENT = trusted_client.riscv
@@ -35,18 +39,19 @@ RUNTIME = eyrie-rt
 EHOST= enclave-host.riscv
 SERVER = server_eapp/server_eapp.eapp_riscv
 
-CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
-LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
+CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -Ikeyedge/ -I$(SODC_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(FLATCC_INCLUDE_DIR)
+
+LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_LIB_DIR)
 
 
 
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
-OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ)
 
 all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
 
 $(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^ $(FLATCC_LIB)
 
 .PHONY:
 $(SERVER):

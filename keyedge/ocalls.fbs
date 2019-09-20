@@ -1,0 +1,39 @@
+table pubkey {
+	data:[int8];
+}
+table encl_message_t {
+	host_ptr:[int8];
+	len:uint32;
+}
+table __pointer_flatbuffers_int8 {
+	__is_null:bool;
+	__data:int8;
+}
+table __pointer_pubkey {
+	__is_null:bool;
+	__data:pubkey;
+}
+table __ocall_wrapper_print_buffer {
+	str:[int8];
+	__return_value:uint32;
+}
+table __ocall_wrapper_print_value {
+	val:uint32;
+	__return_value:int8;
+}
+table __ocall_wrapper_send_reply {
+	message:[int8];
+	len:uint32;
+	__return_value:int8;
+}
+table __ocall_wrapper_send_report {
+	shared_buffer:[int8];
+	len:uint32;
+	__return_value:int8;
+}
+table __ocall_wrapper_wait_for_client_pubkey {
+	__return_value:__pointer_pubkey;
+}
+table __ocall_wrapper_wait_for_message {
+	__return_value:encl_message_t;
+}
