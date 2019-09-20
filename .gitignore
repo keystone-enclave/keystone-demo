@@ -2,3 +2,4 @@
 *.riscv
 *.eapp_riscv
 *~
+libsodium_builds/

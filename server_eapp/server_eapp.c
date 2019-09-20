@@ -24,35 +24,23 @@ void handle_messages(){
   encl_message_t msg;
   while(1){
     msg = wait_for_message();
-/*
-    calc_message_t* calc_msg = malloc(msg.size);
-    
-    if(calc_msg == NULL){
-      print_buffer("Message too large to store, ignoring\n");
-      continue;
-    }
-
-    copy_from_shared(calc_msg, msg.offset, msg.size);
-*/
-
+    calc_message_t* calc_msg = (calc_message_t*) msg.host_ptr;
 	size_t wordmsg_len;
-	
-    if(channel_recv((unsigned char*)msg.host_ptr, msg.len, &wordmsg_len) != 0){
-      free(msg.host_ptr);
+    
+    if(channel_recv((unsigned char*)calc_msg, msg.len, &wordmsg_len) != 0){
+      free(calc_msg);
       continue;
     }
-
-	print_buffer(msg.host_ptr);
-	
-    if(((unsigned char*)msg.host_ptr)[0] == 'q' && wordmsg_len == 1){
+    	
+    if(calc_msg->msg_type == CALC_MSG_EXIT){
       print_buffer("Received exit, exiting\n");
       EAPP_RETURN(0);
     }
 
-    int val = word_count(msg.host_ptr, wordmsg_len);
-	
+    int val = word_count(calc_msg->msg, wordmsg_len);
+
     // Done with the message, free it
-    free(msg.host_ptr);
+    free(calc_msg);
 
     size_t reply_size =channel_get_send_size(sizeof(int));
     unsigned char* reply_buffer = malloc(reply_size);
