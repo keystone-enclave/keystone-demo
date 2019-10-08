@@ -14,13 +14,13 @@ void __wrapper_print_buffer(void* buffer) {
 	}
 	char *str;
 	__ocall_wrapper_print_buffer_table_t function_reference = __ocall_wrapper_print_buffer_as_root((void *) call_args);
+size_t __0_str_keyedge_size = flatbuffers_int8_vec_len(__ocall_wrapper_print_buffer_str(function_reference));
 	flatbuffers_int8_vec_t __flatcc_reference_str = __ocall_wrapper_print_buffer_str(function_reference);
-	size_t __0_str_keyedge_size = flatbuffers_int8_vec_len(__flatcc_reference_str);
 	{
-		str = (char *) malloc((__0_str_keyedge_size) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_str_keyedge_size); ++i1) {
+		str = (char *) malloc((1 * (__0_str_keyedge_size)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_str_keyedge_size); ++i2_0) {
 			{
-				str[i1] = flatbuffers_int8_vec_at(__flatcc_reference_str, i1 + (__0_str_keyedge_size) * (0));
+				( str)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_str, i2_0 + (__0_str_keyedge_size) * (0));
 			}
 		}
 	}
@@ -99,10 +99,10 @@ void __wrapper_send_reply(void* buffer) {
 	}
 	flatbuffers_int8_vec_t __flatcc_reference_message = __ocall_wrapper_send_reply_message(function_reference);
 	{
-		message = (void *) malloc((len) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (len); ++i1) {
+		message = (void *) malloc((1 * (len)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (len); ++i2_0) {
 			{
-				((char*) message)[i1] = flatbuffers_int8_vec_at(__flatcc_reference_message, i1 + (len) * (0));
+				((char*) message)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_message, i2_0 + (len) * (0));
 			}
 		}
 	}
@@ -142,10 +142,10 @@ void __wrapper_send_report(void* buffer) {
 	}
 	flatbuffers_int8_vec_t __flatcc_reference_shared_buffer = __ocall_wrapper_send_report_shared_buffer(function_reference);
 	{
-		shared_buffer = (void *) malloc((len) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (len); ++i1) {
+		shared_buffer = (void *) malloc((1 * (len)) * sizeof(char));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (len); ++i2_0) {
 			{
-				((char*) shared_buffer)[i1] = flatbuffers_int8_vec_at(__flatcc_reference_shared_buffer, i1 + (len) * (0));
+				((char*) shared_buffer)[i2_0] = flatbuffers_int8_vec_at(__flatcc_reference_shared_buffer, i2_0 + (len) * (0));
 			}
 		}
 	}
@@ -185,24 +185,24 @@ void __wrapper_wait_for_client_pubkey(void* buffer) {
 	__pointer_pubkey_ref_t __flatcc_reference_ret_val;
 	{
 		if (ret_val) {
-			pubkey_ref_t __keyedge_pointer_data_1;
+			pubkey_ref_t __keyedge_pointer_data_2;
 			{
 				pubkey_start(&builder);
-				flatbuffers_int8_vec_ref_t __3_data;
+				flatbuffers_int8_vec_ref_t __4_data;
 				{
-					char* __keyedge_array_data_4 = (char*) malloc((1 * (32)) * sizeof(char));
-					for (size_t i4 = 0; i4 < (size_t) (32); ++i4) {
+					char* __keyedge_array_data_5 = (char*) malloc(1 * (32));
+					for (size_t i5_0 = 0; i5_0 < (size_t) (32); ++i5_0) {
 						{
-							__keyedge_array_data_4[i4 + (32) * (0)] = (*ret_val).data[i4];
+							__keyedge_array_data_5[i5_0 + (32) * (0)] = ( (*ret_val).data)[i5_0];
 						}
 					}
-					__3_data = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_4, 1 * (32));
-					free(__keyedge_array_data_4);
+					__4_data = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_5, 1 * (32));
+					free(__keyedge_array_data_5);
 				}
-				pubkey_data_add(&builder, __3_data);
-				__keyedge_pointer_data_1 = pubkey_end(&builder);
+				pubkey_data_add(&builder, __4_data);
+				__keyedge_pointer_data_2 = pubkey_end(&builder);
 			}
-			__flatcc_reference_ret_val = __pointer_pubkey_create(&builder, 0, __keyedge_pointer_data_1);
+			__flatcc_reference_ret_val = __pointer_pubkey_create(&builder, 0, __keyedge_pointer_data_2);
 		} else {
 			__pointer_pubkey_start(&builder);
 			__pointer_pubkey___is_null_add(&builder, 1);
@@ -242,23 +242,23 @@ void __wrapper_wait_for_message(void* buffer) {
 	encl_message_t_ref_t __flatcc_reference_ret_val;
 	{
 		encl_message_t_start(&builder);
-		unsigned long __1_len;
+		unsigned long __2_len;
 		{
-			__1_len = ret_val.len;
+			__2_len = ret_val.len;
 		}
-		flatbuffers_int8_vec_ref_t __1_host_ptr;
+		flatbuffers_int8_vec_ref_t __2_host_ptr;
 		{
-			char* __keyedge_array_data_2 = (char*) malloc((1 * (ret_val.len)) * sizeof(char));
-			for (size_t i2 = 0; i2 < (size_t) (ret_val.len); ++i2) {
+			char* __keyedge_array_data_3 = (char*) malloc(1 * (ret_val.len));
+			for (size_t i3_0 = 0; i3_0 < (size_t) (ret_val.len); ++i3_0) {
 				{
-					__keyedge_array_data_2[i2 + (ret_val.len) * (0)] = ((char*) ret_val.host_ptr)[i2];
+					__keyedge_array_data_3[i3_0 + (ret_val.len) * (0)] = ((char*) ret_val.host_ptr)[i3_0];
 				}
 			}
-			__1_host_ptr = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_2, 1 * (ret_val.len));
-			free(__keyedge_array_data_2);
+			__2_host_ptr = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_3, 1 * (ret_val.len));
+			free(__keyedge_array_data_3);
 		}
-		encl_message_t_host_ptr_add(&builder, __1_host_ptr);
-		encl_message_t_len_add(&builder, __1_len);
+		encl_message_t_host_ptr_add(&builder, __2_host_ptr);
+		encl_message_t_len_add(&builder, __2_len);
 		__flatcc_reference_ret_val = encl_message_t_end(&builder);
 	}
 	__ocall_wrapper_wait_for_message___return_value_add(&builder, __flatcc_reference_ret_val);

@@ -9,19 +9,19 @@ unsigned long print_buffer(char *str) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
 	size_t __0_str_keyedge_size = strlen(str) + 1;
-	flatbuffers_int8_vec_ref_t __flatcc_reference_str;
+	flatbuffers_int8_vec_ref_t __0_str;
 	{
-		char* __keyedge_array_data_1 = (char*) malloc((1 * (__0_str_keyedge_size)) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (__0_str_keyedge_size); ++i1) {
+		char* __keyedge_array_data_2 = (char*) malloc(1 * (__0_str_keyedge_size));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (__0_str_keyedge_size); ++i2_0) {
 			{
-				__keyedge_array_data_1[i1 + (__0_str_keyedge_size) * (0)] = str[i1];
+				__keyedge_array_data_2[i2_0 + (__0_str_keyedge_size) * (0)] = ( str)[i2_0];
 			}
 		}
-		__flatcc_reference_str = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (__0_str_keyedge_size));
-		free(__keyedge_array_data_1);
+		__0_str = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_2, 1 * (__0_str_keyedge_size));
+		free(__keyedge_array_data_2);
 	}
 	__ocall_wrapper_print_buffer_start_as_root(&builder);
-	__ocall_wrapper_print_buffer_str_add(&builder, __flatcc_reference_str);
+	__ocall_wrapper_print_buffer_str_add(&builder, __0_str);
 	__ocall_wrapper_print_buffer_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -33,18 +33,18 @@ unsigned long print_buffer(char *str) {
 	unsigned long __return_value;
 	{
 		__return_value = __ocall_wrapper_print_buffer___return_value(__ocall_wrapper_print_buffer_as_root(return_address));
-	}
+	};
 	return __return_value;
 }
 void print_value(unsigned long val) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
-	unsigned long __flatcc_reference_val;
+	unsigned long __0_val;
 	{
-		__flatcc_reference_val = val;
+		__0_val = val;
 	}
 	__ocall_wrapper_print_value_start_as_root(&builder);
-	__ocall_wrapper_print_value_val_add(&builder, __flatcc_reference_val);
+	__ocall_wrapper_print_value_val_add(&builder, __0_val);
 	__ocall_wrapper_print_value_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -57,24 +57,24 @@ void print_value(unsigned long val) {
 void send_reply(void *message, unsigned long len) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
-	unsigned long __flatcc_reference_len;
+	unsigned long __0_len;
 	{
-		__flatcc_reference_len = len;
+		__0_len = len;
 	}
-	flatbuffers_int8_vec_ref_t __flatcc_reference_message;
+	flatbuffers_int8_vec_ref_t __0_message;
 	{
-		char* __keyedge_array_data_1 = (char*) malloc((1 * (len)) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (len); ++i1) {
+		char* __keyedge_array_data_2 = (char*) malloc(1 * (len));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (len); ++i2_0) {
 			{
-				__keyedge_array_data_1[i1 + (len) * (0)] = ((char*) message)[i1];
+				__keyedge_array_data_2[i2_0 + (len) * (0)] = ((char*) message)[i2_0];
 			}
 		}
-		__flatcc_reference_message = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (len));
-		free(__keyedge_array_data_1);
+		__0_message = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_2, 1 * (len));
+		free(__keyedge_array_data_2);
 	}
 	__ocall_wrapper_send_reply_start_as_root(&builder);
-	__ocall_wrapper_send_reply_message_add(&builder, __flatcc_reference_message);
-	__ocall_wrapper_send_reply_len_add(&builder, __flatcc_reference_len);
+	__ocall_wrapper_send_reply_message_add(&builder, __0_message);
+	__ocall_wrapper_send_reply_len_add(&builder, __0_len);
 	__ocall_wrapper_send_reply_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -87,24 +87,24 @@ void send_reply(void *message, unsigned long len) {
 void send_report(void *shared_buffer, unsigned long len) {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
-	unsigned long __flatcc_reference_len;
+	unsigned long __0_len;
 	{
-		__flatcc_reference_len = len;
+		__0_len = len;
 	}
-	flatbuffers_int8_vec_ref_t __flatcc_reference_shared_buffer;
+	flatbuffers_int8_vec_ref_t __0_shared_buffer;
 	{
-		char* __keyedge_array_data_1 = (char*) malloc((1 * (len)) * sizeof(char));
-		for (size_t i1 = 0; i1 < (size_t) (len); ++i1) {
+		char* __keyedge_array_data_2 = (char*) malloc(1 * (len));
+		for (size_t i2_0 = 0; i2_0 < (size_t) (len); ++i2_0) {
 			{
-				__keyedge_array_data_1[i1 + (len) * (0)] = ((char*) shared_buffer)[i1];
+				__keyedge_array_data_2[i2_0 + (len) * (0)] = ((char*) shared_buffer)[i2_0];
 			}
 		}
-		__flatcc_reference_shared_buffer = flatbuffers_int8_vec_create(&builder, (signed char*)__keyedge_array_data_1, 1 * (len));
-		free(__keyedge_array_data_1);
+		__0_shared_buffer = flatbuffers_int8_vec_create(&builder, (signed char*) __keyedge_array_data_2, 1 * (len));
+		free(__keyedge_array_data_2);
 	}
 	__ocall_wrapper_send_report_start_as_root(&builder);
-	__ocall_wrapper_send_report_shared_buffer_add(&builder, __flatcc_reference_shared_buffer);
-	__ocall_wrapper_send_report_len_add(&builder, __flatcc_reference_len);
+	__ocall_wrapper_send_report_shared_buffer_add(&builder, __0_shared_buffer);
+	__ocall_wrapper_send_report_len_add(&builder, __0_len);
 	__ocall_wrapper_send_report_end_as_root(&builder);
 	void* __buf;
 	size_t __size;
@@ -134,15 +134,17 @@ pubkey *wait_for_client_pubkey() {
 			__return_value = (pubkey *) malloc(sizeof(pubkey));
 			{
 				{
-					for (size_t i4 = 0; i4 < (size_t) (32); ++i4) {
+					
+					for (size_t i5_0 = 0; i5_0 < (size_t) (32); ++i5_0) {
 						{
-							(*__return_value).data[i4] = flatbuffers_int8_vec_at(pubkey_data(__pointer_pubkey___data(__ocall_wrapper_wait_for_client_pubkey___return_value(__ocall_wrapper_wait_for_client_pubkey_as_root(return_address)))), i4 + (32) * (0));
+							( (*__return_value).data)[i5_0] = flatbuffers_int8_vec_at(pubkey_data(__pointer_pubkey___data(__ocall_wrapper_wait_for_client_pubkey___return_value(__ocall_wrapper_wait_for_client_pubkey_as_root(return_address)))), i5_0 + (32) * (0));
 						}
 					}
 				}
+				
 			}
 		}
-	}
+	};
 	return __return_value;
 }
 encl_message_t wait_for_message() {
@@ -163,13 +165,14 @@ encl_message_t wait_for_message() {
 			__return_value.len = encl_message_t_len(__ocall_wrapper_wait_for_message___return_value(__ocall_wrapper_wait_for_message_as_root(return_address)));
 		}
 		{
-			__return_value.host_ptr = (void *) malloc((__return_value.len) * sizeof(char));
-			for (size_t i2 = 0; i2 < (size_t) (__return_value.len); ++i2) {
+			__return_value.host_ptr = (void *) malloc((1 * (__return_value.len)) * sizeof(char));
+			for (size_t i3_0 = 0; i3_0 < (size_t) (__return_value.len); ++i3_0) {
 				{
-					((char*) __return_value.host_ptr)[i2] = flatbuffers_int8_vec_at(encl_message_t_host_ptr(__ocall_wrapper_wait_for_message___return_value(__ocall_wrapper_wait_for_message_as_root(return_address))), i2 + (__return_value.len) * (0));
+					((char*) __return_value.host_ptr)[i3_0] = flatbuffers_int8_vec_at(encl_message_t_host_ptr(__ocall_wrapper_wait_for_message___return_value(__ocall_wrapper_wait_for_message_as_root(return_address))), i3_0 + (__return_value.len) * (0));
 				}
 			}
 		}
-	}
+		
+	};
 	return __return_value;
 }
