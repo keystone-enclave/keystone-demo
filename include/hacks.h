@@ -33,7 +33,6 @@ void * __memcpy_chk(void * dest, const void * src, size_t len, size_t destlen) {
 BAD_CALL( open )
 BAD_CALL( poll )
 //BAD_CALL( posix_memalign )
-int posix_memalign (void **__memptr, size_t __alignment, size_t __size) {EAPP_RETURN(EAPP_ERR_RET); return 0;};
 BAD_CALL( raise )
 BAD_CALL( read )
 //BAD_CALL( syscall )  We actually interpose on this, see below

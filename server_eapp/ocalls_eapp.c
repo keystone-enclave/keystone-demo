@@ -1,5 +1,4 @@
 #include "eapp_utils.h"
-#include "eapp_func.h"
 #include "edge_call.h"
 #include <syscall.h>
 #include "malloc.h"
@@ -64,6 +63,19 @@ int __wrapper_calc_message(void* input, void** output) {
 	__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);
 	*output = __buf;
 	return (int) __size;
+}
+void end_enclave() {
+	flatcc_builder_t builder;
+	flatcc_builder_init(&builder);
+	__ocall_wrapper_end_enclave_start_as_root(&builder);
+	__ocall_wrapper_end_enclave_end_as_root(&builder);
+	void* __buf;
+	size_t __size;
+	__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);
+	char return_address[1024];
+	ocall(__function_end_enclave, __buf, __size, return_address, 1024);
+	free(__buf);
+	flatcc_builder_clear(&builder);
 }
 int __wrapper_get_attestation_report(void* input, void** output) {
 	__ocall_wrapper_get_attestation_report_table_t function_reference = __ocall_wrapper_get_attestation_report_as_root(input);

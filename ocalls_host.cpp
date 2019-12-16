@@ -61,6 +61,34 @@ encl_message_t calc_message(encl_message_t msg) {
 	};
 	return __return_value;
 }
+void __wrapper_end_enclave(void* buffer) {
+	struct edge_call* edge_call = (struct edge_call*) buffer;
+	uintptr_t call_args;
+	size_t arg_len;
+	if (edge_call_args_ptr(edge_call, &call_args, &arg_len) != 0) {
+		edge_call -> return_data.call_status = CALL_STATUS_BAD_OFFSET;
+		return;
+	}
+	__ocall_wrapper_end_enclave_table_t function_reference = __ocall_wrapper_end_enclave_as_root((void *) call_args);
+	end_enclave();
+	flatcc_builder_t builder;
+	flatcc_builder_init(&builder);
+	__ocall_wrapper_end_enclave_start_as_root(&builder);
+	__ocall_wrapper_end_enclave_end_as_root(&builder);
+	void* __buf;
+	size_t __size;
+	__buf = (void *) flatcc_builder_finalize_buffer(&builder, &__size);
+	uintptr_t data_section = edge_call_data_ptr();
+	memcpy((void *) data_section, __buf, __size);
+	free(__buf);
+	flatcc_builder_clear(&builder);
+	if (edge_call_setup_ret(edge_call, (void*) data_section, 1024)) {
+		edge_call -> return_data.call_status = CALL_STATUS_BAD_PTR;
+	} else {
+		edge_call -> return_data.call_status = CALL_STATUS_OK;
+	}
+	return;
+}
 report get_attestation_report() {
 	flatcc_builder_t builder;
 	flatcc_builder_init(&builder);
@@ -218,6 +246,7 @@ int set_client_pk(pubkey *pk) {
 	return __return_value;
 }
 void register_functions() {
+	register_call(__function_end_enclave, __wrapper_end_enclave);
 	register_call(__function_print_buffer, __wrapper_print_buffer);
 	register_call(__function_print_value, __wrapper_print_value);
 	return;

@@ -20,6 +20,9 @@ table __ocall_wrapper_calc_message {
 	msg:encl_message_t;
 	__return_value:encl_message_t;
 }
+table __ocall_wrapper_end_enclave {
+	__return_value:int8;
+}
 table __ocall_wrapper_get_attestation_report {
 	__return_value:report;
 }

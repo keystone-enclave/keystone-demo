@@ -20,7 +20,7 @@ SECTIONS
   . = ALIGN(0x1000);
   .malloc_region : {
     __malloc_start = .;
-    . = . + 4096*4;
+    . = . + 32768;
     __malloc_zone_stop = .;
   }
 

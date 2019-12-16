@@ -22,6 +22,7 @@ typedef struct encl_message_t {
 
 unsigned long print_buffer(keyedge_str char* str);
 void print_value(unsigned long val);
+void end_enclave();
 
 report get_attestation_report() keyedge_inverse;
 int set_client_pk(pubkey* pk) keyedge_inverse;

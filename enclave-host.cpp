@@ -12,6 +12,7 @@
 #include <string>
 #include <cstring>
 #include "keystone.h"
+#include <edge_call.h>
 #include "ocalls.h"
 #include "encl_message.h"
 
@@ -69,6 +70,10 @@ void print_value(unsigned long val){
   return;
 }
 
+void end_enclave(){
+  exit(0);
+}
+
 void init_network_wait(){
 
   int fd_sock;
@@ -98,6 +103,9 @@ void init_network_wait(){
   }
 }
 
+void register_functions();
+Keystone enclave;
+
 int main(int argc, char** argv){
 
   /* Wait for network connection */
@@ -105,7 +113,6 @@ int main(int argc, char** argv){
 
   printf("[EH] Got connection from remote client\n");
 
-  Keystone enclave;
   Params params;
 
   if(enclave.init(enc_path, runtime_path, params) != KEYSTONE_SUCCESS){
@@ -123,6 +130,7 @@ int main(int argc, char** argv){
   report attestation_report = get_attestation_report();
   send_buffer((byte*)attestation_report.data, 2048);
   
+  size_t len;
   if (set_client_pk((pubkey*) recv_buffer(&len))) return 0;
   
   while(1){

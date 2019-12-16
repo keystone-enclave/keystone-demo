@@ -43,6 +43,10 @@ typedef const struct __ocall_wrapper_calc_message_table *__ocall_wrapper_calc_me
 typedef struct __ocall_wrapper_calc_message_table *__ocall_wrapper_calc_message_mutable_table_t;
 typedef const flatbuffers_uoffset_t *__ocall_wrapper_calc_message_vec_t;
 typedef flatbuffers_uoffset_t *__ocall_wrapper_calc_message_mutable_vec_t;
+typedef const struct __ocall_wrapper_end_enclave_table *__ocall_wrapper_end_enclave_table_t;
+typedef struct __ocall_wrapper_end_enclave_table *__ocall_wrapper_end_enclave_mutable_table_t;
+typedef const flatbuffers_uoffset_t *__ocall_wrapper_end_enclave_vec_t;
+typedef flatbuffers_uoffset_t *__ocall_wrapper_end_enclave_mutable_vec_t;
 typedef const struct __ocall_wrapper_get_attestation_report_table *__ocall_wrapper_get_attestation_report_table_t;
 typedef struct __ocall_wrapper_get_attestation_report_table *__ocall_wrapper_get_attestation_report_mutable_table_t;
 typedef const flatbuffers_uoffset_t *__ocall_wrapper_get_attestation_report_vec_t;
@@ -89,6 +93,11 @@ typedef flatbuffers_uoffset_t *__ocall_wrapper_set_client_pk_mutable_vec_t;
 #endif
 #define __ocall_wrapper_calc_message_type_hash ((flatbuffers_thash_t)0x8fa287c8)
 #define __ocall_wrapper_calc_message_type_identifier "\xc8\x87\xa2\x8f"
+#ifndef __ocall_wrapper_end_enclave_identifier
+#define __ocall_wrapper_end_enclave_identifier flatbuffers_identifier
+#endif
+#define __ocall_wrapper_end_enclave_type_hash ((flatbuffers_thash_t)0xa7b40b13)
+#define __ocall_wrapper_end_enclave_type_identifier "\x13\x0b\xb4\xa7"
 #ifndef __ocall_wrapper_get_attestation_report_identifier
 #define __ocall_wrapper_get_attestation_report_identifier flatbuffers_identifier
 #endif
@@ -175,6 +184,16 @@ __flatbuffers_table_as_root(__ocall_wrapper_calc_message)
 
 __flatbuffers_define_table_field(0, __ocall_wrapper_calc_message, msg, encl_message_t_table_t, 0)
 __flatbuffers_define_table_field(1, __ocall_wrapper_calc_message, __return_value, encl_message_t_table_t, 0)
+
+struct __ocall_wrapper_end_enclave_table { uint8_t unused__; };
+
+static inline size_t __ocall_wrapper_end_enclave_vec_len(__ocall_wrapper_end_enclave_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline __ocall_wrapper_end_enclave_table_t __ocall_wrapper_end_enclave_vec_at(__ocall_wrapper_end_enclave_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(__ocall_wrapper_end_enclave_table_t, vec, i, 0)
+__flatbuffers_table_as_root(__ocall_wrapper_end_enclave)
+
+__flatbuffers_define_scalar_field(0, __ocall_wrapper_end_enclave, __return_value, flatbuffers_int8, int8_t, INT8_C(0))
 
 struct __ocall_wrapper_get_attestation_report_table { uint8_t unused__; };
 

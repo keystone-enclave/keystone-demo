@@ -15,6 +15,7 @@ static int encl_message_t_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __pointer_flatbuffers_int8_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __pointer_pubkey_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_calc_message_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int __ocall_wrapper_end_enclave_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_get_attestation_report_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_print_buffer_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int __ocall_wrapper_print_value_verify_table(flatcc_table_verifier_descriptor_t *td);
@@ -184,6 +185,33 @@ static inline int __ocall_wrapper_calc_message_verify_as_root_with_identifier(co
 static inline int __ocall_wrapper_calc_message_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &__ocall_wrapper_calc_message_verify_table);
+}
+
+static int __ocall_wrapper_end_enclave_verify_table(flatcc_table_verifier_descriptor_t *td)
+{
+    int ret;
+    if ((ret = flatcc_verify_field(td, 0, 1, 1) /* __return_value */)) return ret;
+    return flatcc_verify_ok;
+}
+
+static inline int __ocall_wrapper_end_enclave_verify_as_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, __ocall_wrapper_end_enclave_identifier, &__ocall_wrapper_end_enclave_verify_table);
+}
+
+static inline int __ocall_wrapper_end_enclave_verify_as_typed_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, __ocall_wrapper_end_enclave_type_identifier, &__ocall_wrapper_end_enclave_verify_table);
+}
+
+static inline int __ocall_wrapper_end_enclave_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &__ocall_wrapper_end_enclave_verify_table);
+}
+
+static inline int __ocall_wrapper_end_enclave_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &__ocall_wrapper_end_enclave_verify_table);
 }
 
 static int __ocall_wrapper_get_attestation_report_verify_table(flatcc_table_verifier_descriptor_t *td)

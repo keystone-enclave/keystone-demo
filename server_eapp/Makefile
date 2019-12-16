@@ -7,7 +7,7 @@ $(error LIBSODIUM_DIR is not set)
 endif
 
 APP = server_eapp
-APP_C_SRCS= server_eapp.c calculator.c channel.c eapp_func.c
+APP_C_SRCS= server_eapp.c calculator.c channel.c ocalls_eapp.c
 
 CC = riscv64-unknown-linux-gnu-gcc
 CFLAGS = -Wall -Werror
@@ -28,7 +28,7 @@ FLATCC_INCLUDE_DIR = $(KEYEDGE_DIR)/flatcc/include
 FLATCC_LIB = $(KEYEDGE_DIR)/lib/flatccrt.a
 KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/target/include
 
-LDFLAGS = -static -L$(SDK_LIB_DIR) -L$(SOD_LIB_DIR) -L$(KEYEDGE_LIB_DIR)
+LDFLAGS = -static -L$(SDK_LIB_DIR) -L$(SOD_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 CFLAGS += -I$(SDK_INCLUDE_APP_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I../include -I../keyedge -I$(SOD_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(FLATCC_INCLUDE_DIR)
 
 APP_C_OBJS = $(patsubst %.c,%.o, $(APP_C_SRCS))
@@ -43,7 +43,7 @@ $(APP_C_OBJS): %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 $(APP_BIN): %.eapp_riscv : $(APP_C_OBJS) $(APP_A_OBJS) $(SDK_APP_LIB) $(SDK_EDGE_LIB) $(SOD_LIB)
-	$(LINK) $(LDFLAGS) -o $@ $^ $(FLATCC_LIB) -T $(APP_LDS)
+	$(LINK) $(LDFLAGS) --start-group $^ $(FLATCC_LIB) --end-group -T $(APP_LDS) -o $@
 	chmod -x $@
 
 clean:

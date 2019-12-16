@@ -2,7 +2,7 @@
 #include "string.h"
 #include "syscall.h"
 #include "malloc.h"
-#include "eapp_func.h"
+#include "h2ecall.h"
 #include "ocalls.h"
 #include "calculator.h"
 #include "sodium.h"
@@ -16,36 +16,34 @@ report get_attestation_report(){
 }
 
 int set_client_pk(pubkey* pk){
-  client_pk = (unsigned char*) wait_for_client_pubkey();
+  client_pk = (unsigned char*) pk;
   return channel_establish();
 }
 
 encl_message_t calc_message(encl_message_t msg){
   calc_message_t* calc_msg = (calc_message_t*) msg.host_ptr;
   size_t wordmsg_len;
-    
+      
   if(channel_recv((unsigned char*)calc_msg, msg.len, &wordmsg_len) != 0){
     free(calc_msg);
-    continue;
+    end_enclave();
   }
-
-  static encl_message_t reply;
-  // free the last message
-  if (reply.host_ptr) free(reply.host_ptr);
     	
   if(calc_msg->msg_type == CALC_MSG_EXIT){
     print_buffer("Received exit, exiting\n");
-    reply.len = 0;
-    reply.host_ptr = NULL;
-    return reply;
+    end_enclave();
   }
  
   int val = word_count(calc_msg->msg, wordmsg_len);
   
   free(calc_msg);
   
+  static encl_message_t reply;
+  // free the last message
+  if (reply.host_ptr) free(reply.host_ptr);
+    
   reply.len = channel_get_send_size(sizeof(int));
-  reply.host_ptr = malloc(reply_size);
+  reply.host_ptr = malloc(reply.len);
 
   channel_send((unsigned char*)&val, sizeof(int), reply.host_ptr);
 

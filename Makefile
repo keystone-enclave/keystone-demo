@@ -40,7 +40,7 @@ SERVER = server_eapp/server_eapp.eapp_riscv
 
 CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -Ikeyedge/ -I$(SODC_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(FLATCC_INCLUDE_DIR)
 
-LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_LIB_DIR)
+LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 
 
 
@@ -50,7 +50,7 @@ OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) ocalls_host.o
 all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
 
 $(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^ $(FLATCC_LIB)
+	$(CC) $(CCFLAGS) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group $(FLATCC_LIB) -o $(EHOST)
 
 .PHONY:
 $(SERVER):
@@ -81,6 +81,7 @@ copybins:
 
 clean:
 	rm -f *.o *.riscv
+	rm -f server_eapp/*.o server_eapp/*.eapp_riscv
 	rm -f eyrie-rt
 	$(foreach app, $(APPS), \
 		$(MAKE) -C $(app) clean; \

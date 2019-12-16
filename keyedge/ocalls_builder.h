@@ -47,6 +47,11 @@ typedef flatbuffers_ref_t __ocall_wrapper_calc_message_ref_t;
 static __ocall_wrapper_calc_message_ref_t __ocall_wrapper_calc_message_clone(flatbuffers_builder_t *B, __ocall_wrapper_calc_message_table_t t);
 __flatbuffers_build_table(flatbuffers_, __ocall_wrapper_calc_message, 2)
 
+static const flatbuffers_voffset_t ____ocall_wrapper_end_enclave_required[] = { 0 };
+typedef flatbuffers_ref_t __ocall_wrapper_end_enclave_ref_t;
+static __ocall_wrapper_end_enclave_ref_t __ocall_wrapper_end_enclave_clone(flatbuffers_builder_t *B, __ocall_wrapper_end_enclave_table_t t);
+__flatbuffers_build_table(flatbuffers_, __ocall_wrapper_end_enclave, 1)
+
 static const flatbuffers_voffset_t ____ocall_wrapper_get_attestation_report_required[] = { 0 };
 typedef flatbuffers_ref_t __ocall_wrapper_get_attestation_report_ref_t;
 static __ocall_wrapper_get_attestation_report_ref_t __ocall_wrapper_get_attestation_report_clone(flatbuffers_builder_t *B, __ocall_wrapper_get_attestation_report_table_t t);
@@ -96,6 +101,11 @@ __flatbuffers_build_table_prolog(flatbuffers_, __pointer_pubkey, __pointer_pubke
 #define ____ocall_wrapper_calc_message_call_args , v0, v1
 static inline __ocall_wrapper_calc_message_ref_t __ocall_wrapper_calc_message_create(flatbuffers_builder_t *B ____ocall_wrapper_calc_message_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, __ocall_wrapper_calc_message, __ocall_wrapper_calc_message_identifier, __ocall_wrapper_calc_message_type_identifier)
+
+#define ____ocall_wrapper_end_enclave_formal_args , int8_t v0
+#define ____ocall_wrapper_end_enclave_call_args , v0
+static inline __ocall_wrapper_end_enclave_ref_t __ocall_wrapper_end_enclave_create(flatbuffers_builder_t *B ____ocall_wrapper_end_enclave_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, __ocall_wrapper_end_enclave, __ocall_wrapper_end_enclave_identifier, __ocall_wrapper_end_enclave_type_identifier)
 
 #define ____ocall_wrapper_get_attestation_report_formal_args , report_ref_t v0
 #define ____ocall_wrapper_get_attestation_report_call_args , v0
@@ -253,6 +263,27 @@ static __ocall_wrapper_calc_message_ref_t __ocall_wrapper_calc_message_clone(fla
         return 0;
     }
     __flatbuffers_memoize_end(B, t, __ocall_wrapper_calc_message_end(B));
+}
+
+__flatbuffers_build_scalar_field(0, flatbuffers_, __ocall_wrapper_end_enclave___return_value, flatbuffers_int8, int8_t, 1, 1, INT8_C(0), __ocall_wrapper_end_enclave)
+
+static inline __ocall_wrapper_end_enclave_ref_t __ocall_wrapper_end_enclave_create(flatbuffers_builder_t *B ____ocall_wrapper_end_enclave_formal_args)
+{
+    if (__ocall_wrapper_end_enclave_start(B)
+        || __ocall_wrapper_end_enclave___return_value_add(B, v0)) {
+        return 0;
+    }
+    return __ocall_wrapper_end_enclave_end(B);
+}
+
+static __ocall_wrapper_end_enclave_ref_t __ocall_wrapper_end_enclave_clone(flatbuffers_builder_t *B, __ocall_wrapper_end_enclave_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (__ocall_wrapper_end_enclave_start(B)
+        || __ocall_wrapper_end_enclave___return_value_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, __ocall_wrapper_end_enclave_end(B));
 }
 
 __flatbuffers_build_table_field(0, flatbuffers_, __ocall_wrapper_get_attestation_report___return_value, report, __ocall_wrapper_get_attestation_report)
