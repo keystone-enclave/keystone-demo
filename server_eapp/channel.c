@@ -22,16 +22,17 @@ void channel_init(){
 
 }
 
-void channel_establish(){
+int channel_establish(){
 
   /* Ask libsodium to generate session keys based on the recv'd pk */
 
   if(crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk) != 0) {
     print_buffer("[C] Unable to generate session keys, exiting\n");
-    EAPP_RETURN(1);
+    return 1;
   }
   print_buffer("[C] Successfully generated session keys.\n");
-
+  return 0;
+  
 }
 
 #define MSG_BLOCKSIZE 32

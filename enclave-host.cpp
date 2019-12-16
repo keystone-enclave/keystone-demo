@@ -12,7 +12,7 @@
 #include <string>
 #include <cstring>
 #include "keystone.h"
-#include "ocalls_host.h"
+#include "ocalls.h"
 #include "encl_message.h"
 
 #define PRINT_MESSAGE_BUFFERS 1
@@ -69,41 +69,6 @@ void print_value(unsigned long val){
   return;
 }
 
-void send_reply(void* data, size_t len){
-  printf("[EH] Sending encrypted reply:\n");
-
-  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)data, len);
-
-  send_buffer((byte*)data, len);
-}
-
-pubkey* wait_for_client_pubkey(){
-  size_t len;
-  return (pubkey*) recv_buffer(&len);
-}
-
-encl_message_t wait_for_message(){
-
-  size_t len;
-
-  void* buffer = recv_buffer(&len);
-
-  printf("[EH] Got an encrypted message:\n");
-  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
-
-  /* This happens here */
-  encl_message_t message;
-  message.host_ptr = buffer;
-  message.len = len;
-  return message;
-}
-
-void send_report(void* buffer, size_t len)
-{
-  send_buffer((byte*)buffer, len);
-}
-
-
 void init_network_wait(){
 
   int fd_sock;
@@ -133,8 +98,7 @@ void init_network_wait(){
   }
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
 
   /* Wait for network connection */
   init_network_wait();
@@ -154,8 +118,31 @@ int main(int argc, char** argv)
   edge_call_init_internals((uintptr_t)enclave.getSharedBuffer(),
     enclave.getSharedBufferSize());
     
-  int rval = enclave.run();
-  printf("rval: %i\n",rval);
+  enclave.run();
 
+  report attestation_report = get_attestation_report();
+  send_buffer((byte*)attestation_report.data, 2048);
+  
+  if (set_client_pk((pubkey*) recv_buffer(&len))) return 0;
+  
+  while(1){
+    size_t len;
+    void* buffer = recv_buffer(&len);
+
+    printf("[EH] Got an encrypted message:\n");
+    if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
+   
+    encl_message_t message, reply;
+    message.host_ptr = buffer;
+    message.len = len;
+    
+    reply = calc_message(message);
+    if (!reply.len) return 0;
+    printf("[EH] Sending encrypted reply:\n");
+    if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)reply.host_ptr, reply.len);
+    
+    send_buffer((byte*)reply.host_ptr, reply.len);    
+  }
   return 0;
 }
+

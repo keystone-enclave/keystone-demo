@@ -28,10 +28,9 @@ SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
 SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
-FLATCC_INCLUDE_DIR = $(FLATCC_DIR)/include
-FLATCC_LIB = $(KEYEDGE_LIB_DIR)/flatccrt.a
-KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/include
-KEYEDGE_LIB_DIR = $(KEYEDGE_DIR)/lib
+FLATCC_INCLUDE_DIR = $(KEYEDGE_DIR)/flatcc/include
+FLATCC_LIB = $(KEYEDGE_DIR)/lib/flatccrt.a
+KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/target/include
 
 TCLIENT_SRCS = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 TCLIENT = trusted_client.riscv
@@ -45,8 +44,8 @@ LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_LIB_DIR)
 
 
 
-SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
-OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ)
+SRCS = $(patsubst %.riscv, %.cpp, $(EHOST)) ocalls_host.cpp
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) ocalls_host.o
 
 all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
 

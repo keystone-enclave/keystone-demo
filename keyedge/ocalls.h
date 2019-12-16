@@ -7,6 +7,10 @@ typedef unsigned long size_t;
 
 #define crypto_kx_PUBLICKEYBYTES 32
 
+typedef struct report {
+	char data[2048];
+} report;
+
 typedef struct pubkey {
 	char data[crypto_kx_PUBLICKEYBYTES];
 } pubkey;
@@ -18,9 +22,9 @@ typedef struct encl_message_t {
 
 unsigned long print_buffer(keyedge_str char* str);
 void print_value(unsigned long val);
-void send_report(keyedge_vla void* shared_buffer, keyedge_size size_t len);
-encl_message_t wait_for_message();
-void send_reply(keyedge_vla void* message, keyedge_size size_t len);
-pubkey* wait_for_client_pubkey();
+
+report get_attestation_report() keyedge_inverse;
+int set_client_pk(pubkey* pk) keyedge_inverse;
+encl_message_t calc_message(encl_message_t msg) keyedge_inverse;
 
 #endif /* _EDGE_WRAPPER_H_ */
