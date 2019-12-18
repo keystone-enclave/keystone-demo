@@ -10,6 +10,10 @@ ifndef LIBSODIUM_CLIENT_DIR
 $(error LIBSODIUM_CLIENT_DIR is not set)
 endif
 
+ifndef KEYEDGE_DIR
+$(error KEYEDGE_DIR is not set)
+endif
+
 CC = riscv64-unknown-linux-gnu-g++
 
 SDK_LIB_DIR = $(KEYSTONE_SDK_DIR)/lib
@@ -47,13 +51,21 @@ LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 SRCS = $(patsubst %.riscv, %.cpp, $(EHOST)) ocalls_host.cpp
 OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) ocalls_host.o
 
-all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
+all: edge prog
 
-$(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
+edge:
+	cd keyedge && $(KEYEDGE_DIR)/bin/keyedge ocalls.h
+	cd keyedge && $(KEYEDGE_DIR)/flatcc/bin/flatcc -a ocalls.fbs
+	mv keyedge/ocalls_host.cpp ./
+	mv keyedge/ocalls_eapp.c server_eapp/
+
+prog: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
+
+$(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB) 
 	$(CC) $(CCFLAGS) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group $(FLATCC_LIB) -o $(EHOST)
 
 .PHONY:
-$(SERVER):
+$(SERVER): 
 	$(MAKE) -C `dirname $(SERVER)`
 
 $(TCLIENT): $(TCLIENT_SRCS)
@@ -82,6 +94,8 @@ copybins:
 clean:
 	rm -f *.o *.riscv
 	rm -f server_eapp/*.o server_eapp/*.eapp_riscv
+	rm -f keyedge/flatbuffers* keyedge/ocalls.fbs keyedge/ocalls_*
+	rm -f ocalls_host.cpp server_eapp/ocalls_eapp.c
 	rm -f eyrie-rt
 	$(foreach app, $(APPS), \
 		$(MAKE) -C $(app) clean; \
