@@ -73,7 +73,7 @@ getandsethash:
 copybins:
 	mkdir -p $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
 	cp $(TCLIENT) $(EHOST) $(SERVER) $(RUNTIME) $(KEYSTONE_DIR)/buildroot_overlay/root/keystone-demo/
-	cd $(KEYSTONE_DIR) && make image
+	@echo "Binaries copied to buildroot overlay in Keystone.\n******************************************************************************************\nRun \"make image\" in your keystone build directory to include demo binaries in image build.\n******************************************************************************************\n"
 
 clean:
 	rm -f *.o *.riscv

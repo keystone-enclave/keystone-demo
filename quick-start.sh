@@ -9,6 +9,9 @@ built the sdk tests and run them successfully in qemu.
 You must set KEYSTONE_DIR to the directory of a built
 keystone clone.
 
+You must have the riscv64 gcc on-path as well. (e.g. run
+'source source.sh' in the Keystone directory.
+
 If you have already started building libsodium/etc, it is not
 recommended to use this script."
 read -r -p "Continue? [Y/n] " response
@@ -24,6 +27,12 @@ fi
 if [[ ! -v KEYSTONE_DIR ]]
 then
     echo "KEYSTONE_DIR not set! Please set this to the location of the keystone checkout!"
+    exit 0
+fi
+
+if [[ ! $(command -v riscv64-unknown-linux-gnu-gcc) ]]
+then
+    echo "No riscv64 gcc available. Make sure you've run \"source source.sh\" in the Keystone directory (or equivalent.)";
     exit 0
 fi
 
@@ -71,6 +80,6 @@ make copybins
 
 # Done!
 
-echo -e "************ Demo binaries built and copied into sdk bins directory. ***************
-            Run 'make' in the top-level of keystone, and the demo binaries should
+echo -e "************ Demo binaries built and copied into overlay directory. ***************
+            Run 'make image' in the Keystone build dir, and the demo binaries should
             be available in qemu next time you start it!"
