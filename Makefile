@@ -10,6 +10,10 @@ ifndef LIBSODIUM_CLIENT_DIR
 $(error LIBSODIUM_CLIENT_DIR is not set)
 endif
 
+ifndef KEYEDGE_DIR
+$(error KEYEDGE_DIR is not set)
+endif
+
 CC = riscv64-unknown-linux-gnu-g++
 
 SDK_LIB_DIR = $(KEYSTONE_SDK_DIR)/lib
@@ -28,6 +32,9 @@ SODC_LIB = $(SODC_LIB_DIR)/libsodium.a
 SOD_LIB_DIR = $(LIBSODIUM_DIR)/.libs
 SOD_LIB = $(SOD_LIB_DIR)/libsodium.a
 
+FLATCC_INCLUDE_DIR = $(KEYEDGE_DIR)/flatcc/include
+FLATCC_LIB = $(KEYEDGE_DIR)/lib/flatccrt.a
+KEYEDGE_INCLUDE_DIR = $(KEYEDGE_DIR)/target/include
 
 TCLIENT_SRCS = trusted_client/client.cpp trusted_client/trusted_client.cpp include/enclave_expected_hash.h include/sm_expected_hash.h
 TCLIENT = trusted_client.riscv
@@ -35,21 +42,30 @@ RUNTIME = eyrie-rt
 EHOST= enclave-host.riscv
 SERVER = server_eapp/server_eapp.eapp_riscv
 
-CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -I$(SODC_INCLUDE_DIR)
-LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR)
+CCFLAGS = -I$(SDK_INCLUDE_HOST_DIR) -I$(SDK_INCLUDE_EDGE_DIR) -I$(SDK_INCLUDE_VERIFIER_DIR) -Iinclude/ -Ikeyedge/ -I$(SODC_INCLUDE_DIR) -I$(KEYEDGE_INCLUDE_DIR) -I$(FLATCC_INCLUDE_DIR)
+
+LDFLAGS = -L$(SDK_LIB_DIR) -L$(SODC_LIB_DIR) -L$(KEYEDGE_DIR)/lib
 
 
 
-SRCS = $(patsubst %.riscv, %.cpp, $(EHOST))
-OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) edge_wrapper.o
+SRCS = $(patsubst %.riscv, %.cpp, $(EHOST)) ocalls_host.cpp
+OBJS = $(patsubst %.riscv, %.o,$(EHOST)) $(KEYSTONE_OBJ) ocalls_host.o
 
-all: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
+all: edge prog
 
-$(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EHOST) $^
+edge:
+	cd keyedge && $(KEYEDGE_DIR)/bin/keyedge ocalls.h
+	cd keyedge && $(KEYEDGE_DIR)/flatcc/bin/flatcc -a ocalls.fbs
+	mv keyedge/ocalls_host.cpp ./
+	mv keyedge/ocalls_eapp.c server_eapp/
+
+prog: $(EHOST) $(TCLIENT) $(SERVER) $(RUNTIME)
+
+$(EHOST): $(OBJS) $(SDK_HOST_LIB) $(SDK_EDGE_LIB) $(SDK_VERIFIER_LIB) $(SODC_LIB) 
+	$(CC) $(CCFLAGS) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group $(FLATCC_LIB) -o $(EHOST)
 
 .PHONY:
-$(SERVER):
+$(SERVER): 
 	$(MAKE) -C `dirname $(SERVER)`
 
 $(TCLIENT): $(TCLIENT_SRCS)
@@ -77,6 +93,9 @@ copybins:
 
 clean:
 	rm -f *.o *.riscv
+	rm -f server_eapp/*.o server_eapp/*.eapp_riscv
+	rm -f keyedge/flatbuffers* keyedge/ocalls.fbs keyedge/ocalls_*
+	rm -f ocalls_host.cpp server_eapp/ocalls_eapp.c
 	rm -f eyrie-rt
 	$(foreach app, $(APPS), \
 		$(MAKE) -C $(app) clean; \

@@ -2,76 +2,63 @@
 #include "string.h"
 #include "syscall.h"
 #include "malloc.h"
-#include "edge_wrapper.h"
+#include "h2ecall.h"
+#include "ocalls.h"
 #include "calculator.h"
 #include "sodium.h"
 #include "hacks.h"
 #include "channel.h"
 
-
-void attest_and_establish_channel(){
-  // TODO sizeof report
-  char buffer[2048];
-  attest_enclave((void*) buffer, server_pk, crypto_kx_PUBLICKEYBYTES);
-  ocall_send_report(buffer, 2048);
-
-
-  ocall_wait_for_client_pubkey(client_pk, crypto_kx_PUBLICKEYBYTES);
-  channel_establish();
+report get_attestation_report(){
+  report ret;
+  attest_enclave((void*) (ret.data), server_pk, crypto_kx_PUBLICKEYBYTES);
+  return ret;
 }
 
-void handle_messages(){
-  struct edge_data msg;
-  while(1){
-    ocall_wait_for_message(&msg);
-    calc_message_t* calc_msg = malloc(msg.size);
-    size_t wordmsg_len;
+int set_client_pk(pubkey* pk){
+  client_pk = (unsigned char*) pk;
+  return channel_establish();
+}
 
-    if(calc_msg == NULL){
-      ocall_print_buffer("Message too large to store, ignoring\n");
-      continue;
-    }
-
-    copy_from_shared(calc_msg, msg.offset, msg.size);
-    if(channel_recv((unsigned char*)calc_msg, msg.size, &wordmsg_len) != 0){
-      free(calc_msg);
-      continue;
-    }
-
-    if(calc_msg->msg_type == CALC_MSG_EXIT){
-      ocall_print_buffer("Received exit, exiting\n");
-      EAPP_RETURN(0);
-    }
-
-    int val = word_count(calc_msg->msg, wordmsg_len);
-
-    // Done with the message, free it
+encl_message_t calc_message(encl_message_t msg){
+  calc_message_t* calc_msg = (calc_message_t*) msg.host_ptr;
+  size_t wordmsg_len;
+      
+  if(channel_recv((unsigned char*)calc_msg, msg.len, &wordmsg_len) != 0){
     free(calc_msg);
-
-    size_t reply_size =channel_get_send_size(sizeof(int));
-    unsigned char* reply_buffer = malloc(reply_size);
-    if(reply_buffer == NULL){
-      ocall_print_buffer("Reply too large to allocate, no reply sent\n");
-      continue;
-    }
-
-    channel_send((unsigned char*)&val, sizeof(int), reply_buffer);
-    ocall_send_reply(reply_buffer,reply_size);
-
-    free(reply_buffer);
-
+    end_enclave();
   }
+    	
+  if(calc_msg->msg_type == CALC_MSG_EXIT){
+    print_buffer("Received exit, exiting\n");
+    end_enclave();
+  }
+ 
+  int val = word_count(calc_msg->msg, wordmsg_len);
+  
+  free(calc_msg);
+  
+  static encl_message_t reply;
+  // free the last message
+  if (reply.host_ptr) free(reply.host_ptr);
+    
+  reply.len = channel_get_send_size(sizeof(int));
+  reply.host_ptr = malloc(reply.len);
 
+  channel_send((unsigned char*)&val, sizeof(int), reply.host_ptr);
+
+  return reply;
 }
+
+void register_inverse_functions();
 
 void EAPP_ENTRY eapp_entry(){
-
-  edge_init();
   magic_random_init();
   channel_init();
 
-  attest_and_establish_channel();
-  handle_messages();
+  register_inverse_functions();
+  receive_calls(h2ecall_dispatch);
 
   EAPP_RETURN(0);
 }
+

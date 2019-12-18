@@ -2,7 +2,7 @@
 #include "sodium.h"
 #include "channel.h"
 #include "string.h"
-#include "edge_wrapper.h"
+#include "ocalls.h"
 
 void channel_init(){
 
@@ -10,28 +10,29 @@ void channel_init(){
   randombytes_set_implementation(&randombytes_salsa20_implementation);
 
   if(sodium_init() < 0 ){
-    ocall_print_buffer("[C] Sodium init failed, exiting\n");
+    print_buffer("[C] Sodium init failed, exiting\n");
     EAPP_RETURN(1);
   }
 
   /* Generate our keys */
   if(crypto_kx_keypair(server_pk, server_sk) != 0){
-    ocall_print_buffer("[C] Unable to generate keypair, exiting\n");
+    print_buffer("[C] Unable to generate keypair, exiting\n");
     EAPP_RETURN(1);
   }
 
 }
 
-void channel_establish(){
+int channel_establish(){
 
   /* Ask libsodium to generate session keys based on the recv'd pk */
 
   if(crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk) != 0) {
-    ocall_print_buffer("[C] Unable to generate session keys, exiting\n");
-    EAPP_RETURN(1);
+    print_buffer("[C] Unable to generate session keys, exiting\n");
+    return 1;
   }
-  ocall_print_buffer("[C] Successfully generated session keys.\n");
-
+  print_buffer("[C] Successfully generated session keys.\n");
+  return 0;
+  
 }
 
 #define MSG_BLOCKSIZE 32
@@ -44,14 +45,14 @@ int channel_recv(unsigned char* msg_buffer, size_t len, size_t* datalen){
   unsigned char* nonceptr = &(msg_buffer[clen]);
 
   if (crypto_secretbox_open_easy(msg_buffer, msg_buffer, clen, nonceptr, rx) != 0){
-    ocall_print_buffer("[C] Invalid message, ignoring\n");
+    print_buffer("[C] Invalid message, ignoring\n");
     return -1;
   }
   size_t ptlen = len - crypto_secretbox_NONCEBYTES - crypto_secretbox_MACBYTES;
 
   size_t unpad_len;
   if( sodium_unpad(&unpad_len, msg_buffer, ptlen, MSG_BLOCKSIZE) != 0){
-    ocall_print_buffer("[C] Invalid message padding, ignoring\n");
+    print_buffer("[C] Invalid message padding, ignoring\n");
     return -1;
   }
 
@@ -74,7 +75,7 @@ void channel_send(unsigned char* msg, size_t len, unsigned char* buffer){
   memcpy(buffer, msg, len);
 
   if (sodium_pad(&buf_padded_len, buffer, len, MSG_BLOCKSIZE, BLOCK_UP(len)) != 0) {
-    ocall_print_buffer("[C] Unable to pad message, exiting\n");
+    print_buffer("[C] Unable to pad message, exiting\n");
     EAPP_RETURN(1);
   }
 
@@ -82,7 +83,7 @@ void channel_send(unsigned char* msg, size_t len, unsigned char* buffer){
   randombytes_buf(nonceptr, crypto_secretbox_NONCEBYTES);
 
   if(crypto_secretbox_easy(buffer, buffer, buf_padded_len, nonceptr, tx) != 0){
-    ocall_print_buffer("[C] Unable to encrypt message, exiting\n");
+    print_buffer("[C] Unable to encrypt message, exiting\n");
     EAPP_RETURN(1);
   }
 

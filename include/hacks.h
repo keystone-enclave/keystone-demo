@@ -14,12 +14,12 @@
  * getrandom only.
  */
 #define EAPP_ERR_RET 5
-#define BAD_CALL(fn) void fn(void){ocall_print_buffer(#fn);EAPP_RETURN(EAPP_ERR_RET);}
+#define BAD_CALL(fn) void fn(void){print_buffer(#fn);EAPP_RETURN(EAPP_ERR_RET);}
 
 int dummy_errno = 0;
 
 BAD_CALL( abort )
-BAD_CALL( __assert_fail )
+//BAD_CALL( __assert_fail )
 BAD_CALL( close )
 //BAD_CALL( __errno_location ) We actually interpose on this, see below
 BAD_CALL( fcntl )
@@ -33,7 +33,6 @@ void * __memcpy_chk(void * dest, const void * src, size_t len, size_t destlen) {
 BAD_CALL( open )
 BAD_CALL( poll )
 //BAD_CALL( posix_memalign )
-int posix_memalign (void **__memptr, size_t __alignment, size_t __size) {EAPP_RETURN(EAPP_ERR_RET); return 0;};
 BAD_CALL( raise )
 BAD_CALL( read )
 //BAD_CALL( syscall )  We actually interpose on this, see below
@@ -50,7 +49,7 @@ size_t remaining_bytes;
 unsigned char* entropy_bytes;
 
 void magic_random_init(){
-  ocall_print_buffer("NOT USING REAL RANDOMNESS: TEST ONLY\n");
+  print_buffer("NOT USING REAL RANDOMNESS: TEST ONLY\n");
   entropy_bytes = (unsigned char*)malloc(512);
   if(!entropy_bytes){
     EAPP_RETURN(EAPP_ERR_RET);

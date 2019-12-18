@@ -12,7 +12,8 @@
 #include <string>
 #include <cstring>
 #include "keystone.h"
-#include "edge_wrapper.h"
+#include <edge_call.h>
+#include "ocalls.h"
 #include "encl_message.h"
 
 #define PRINT_MESSAGE_BUFFERS 1
@@ -69,40 +70,9 @@ void print_value(unsigned long val){
   return;
 }
 
-void send_reply(void* data, size_t len){
-  printf("[EH] Sending encrypted reply:\n");
-
-  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)data, len);
-
-  send_buffer((byte*)data, len);
+void end_enclave(){
+  exit(0);
 }
-
-void* wait_for_client_pubkey(){
-  size_t len;
-  return recv_buffer(&len);
-}
-
-encl_message_t wait_for_message(){
-
-  size_t len;
-
-  void* buffer = recv_buffer(&len);
-
-  printf("[EH] Got an encrypted message:\n");
-  if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
-
-  /* This happens here */
-  encl_message_t message;
-  message.host_ptr = buffer;
-  message.len = len;
-  return message;
-}
-
-void send_report(void* buffer, size_t len)
-{
-  send_buffer((byte*)buffer, len);
-}
-
 
 void init_network_wait(){
 
@@ -133,15 +103,16 @@ void init_network_wait(){
   }
 }
 
-int main(int argc, char** argv)
-{
+void register_functions();
+Keystone enclave;
+
+int main(int argc, char** argv){
 
   /* Wait for network connection */
   init_network_wait();
 
   printf("[EH] Got connection from remote client\n");
 
-  Keystone enclave;
   Params params;
 
   if(enclave.init(enc_path, runtime_path, params) != KEYSTONE_SUCCESS){
@@ -149,10 +120,37 @@ int main(int argc, char** argv)
     exit(-1);
   }
 
-  edge_init(&enclave);
+  enclave.registerOcallDispatch(incoming_call_dispatch);
+  register_functions();
+  edge_call_init_internals((uintptr_t)enclave.getSharedBuffer(),
+    enclave.getSharedBufferSize());
+    
+  enclave.run();
 
-  int rval = enclave.run();
-  printf("rval: %i\n",rval);
+  report attestation_report = get_attestation_report();
+  send_buffer((byte*)attestation_report.data, 2048);
+  
+  size_t len;
+  if (set_client_pk((pubkey*) recv_buffer(&len))) return 0;
+  
+  while(1){
+    size_t len;
+    void* buffer = recv_buffer(&len);
 
+    printf("[EH] Got an encrypted message:\n");
+    if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)buffer, len);
+   
+    encl_message_t message, reply;
+    message.host_ptr = buffer;
+    message.len = len;
+    
+    reply = calc_message(message);
+    if (!reply.len) return 0;
+    printf("[EH] Sending encrypted reply:\n");
+    if( PRINT_MESSAGE_BUFFERS ) print_hex_data((unsigned char*)reply.host_ptr, reply.len);
+    
+    send_buffer((byte*)reply.host_ptr, reply.len);    
+  }
   return 0;
 }
+

@@ -27,6 +27,12 @@ then
     exit 0
 fi
 
+if [[ ! -v KEYEDGE_DIR ]]
+then
+    echo "KEYEDGE_DIR not set! Please set this to the location of the keyedge checkout!"
+    exit 0
+fi
+
 export KEYSTONE_SDK_DIR=$KEYSTONE_DIR/sdk
 
 DEMO_DIR=$(pwd)
