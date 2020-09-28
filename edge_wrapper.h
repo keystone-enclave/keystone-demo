@@ -12,7 +12,7 @@ typedef struct encl_message_t {
   size_t len;
 } encl_message_t;
 
-int edge_init(Keystone* enclave);
+int edge_init(Keystone::Enclave* enclave);
 
 void print_buffer_wrapper(void* buffer);
 unsigned long print_buffer(char* str);

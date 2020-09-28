@@ -1,3 +1,4 @@
+*.swp
 *.o
 *.riscv
 *.eapp_riscv
