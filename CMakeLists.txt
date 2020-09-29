@@ -46,20 +46,25 @@ set(KEYSTONE_LIB_EAPP ${KEYSTONE_SDK_DIR}/lib/libkeystone-eapp.a)
 # find program "makeself"
 find_program(MAKESELF makeself)
 
-# enclave
-set(eapp_bin trusted_client.riscv)
-set(eapp_src trusted_client/client.cpp
-             trusted_client/trusted_client.cpp
-             include/enclave_expected_hash.h
-             include/sm_expected_hash.h)
-set(host_bin runner.riscv)
-set(host_src enclave-host.cpp edge_wrapper.cpp)
-set(eyrie_plugins "")
-set(package_name "demo.ke")
-set(package_script "./runner.riscv trusted_client.riscv eyrie-rt")
+# trusted client
+add_executable(trusted_client.riscv
+  trusted_client/client.cpp
+  trusted_client/trusted_client.cpp
+  include/enclave_expected_hash.h
+  include/sm_expected_hash.h
+)
 
-add_executable(${eapp_bin} ${eapp_src})
-target_link_libraries(${eapp_bin} "-static" ${KEYSTONE_LIB_EDGE} ${KEYSTONE_LIB_VERIFIER} ${LIBSODIUM_CLIENT_DIR}/.libs/libsodium.a)
+target_link_libraries(trusted_client.riscv
+  ${KEYSTONE_LIB_VERIFIER}
+  ${LIBSODIUM_CLIENT_DIR}/.libs/libsodium.a)
+
+# enclave
+add_subdirectory(server_eapp)
+set(host_bin demo-server.riscv)
+set(host_src enclave-host.cpp edge_wrapper.cpp)
+set(eyrie_plugins "freemem")
+set(package_name "demo-server.ke")
+set(package_script "./demo-server.riscv")
 
 add_executable(${host_bin} ${host_src})
 target_link_libraries(${host_bin} ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} ${KEYSTONE_LIB_VERIFIER})
@@ -70,11 +75,10 @@ add_eyrie_runtime(${eapp_bin}-eyrie
   ${eyrie_plugins}
   ${eyrie_files_to_copy})
 
-add_keystone_package(${eapp_bin}-package
+add_keystone_package(package
   ${package_name}
   ${package_script}
-  ${eyrie_files_to_copy} ${eapp_bin} ${host_bin})
+  ${eyrie_files_to_copy} server_eapp/server_eapp.eapp_riscv ${host_bin})
 
-add_dependencies(${eapp_bin}-package ${eapp_bin}-eyrie)
+add_dependencies(package ${eapp_bin}-eyrie)
 
-add_subdirectory(server_eapp)
