@@ -141,17 +141,17 @@ int main(int argc, char** argv)
 
   printf("[EH] Got connection from remote client\n");
 
-  Keystone enclave;
-  Params params;
+  Keystone::Enclave enclave;
+  Keystone::Params params;
 
-  if(enclave.init(enc_path, runtime_path, params) != KEYSTONE_SUCCESS){
+  if(enclave.init(enc_path, runtime_path, params) != Keystone::Error::Success){
     printf("HOST: Unable to start enclave\n");
     exit(-1);
   }
 
   edge_init(&enclave);
 
-  int rval = enclave.run();
+  Keystone::Error rval = enclave.run();
   printf("rval: %i\n",rval);
 
   return 0;

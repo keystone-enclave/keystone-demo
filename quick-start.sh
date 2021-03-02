@@ -1,13 +1,14 @@
 #!/bin/bash
 
+set -e
+
 echo -e "This is a quick-start build script for the Keystone Demo, it
 will clone and build all the necessary parts to run the demo
 server/applcation and client on a RISC-V platform (ex: qemu). Please
 ensure you have cloned keystone completely and that you have fully
 built the sdk tests and run them successfully in qemu.
 
-You must set KEYSTONE_DIR to the directory of a built
-keystone clone.
+You must set KEYSTONE_SDK_DIR to the install directory of Keystone SDK.
 
 You must have the riscv64 gcc on-path as well. (e.g. run
 'source source.sh' in the Keystone directory.
@@ -21,12 +22,16 @@ then
     exit 0
 fi
 
-
-
 # Check location/tools
+if [[ ! -v KEYSTONE_SDK_DIR ]]
+then
+    echo "KEYSTONE_SDK_DIR not set! Please set this to the location where Keystone SDK has been installed."
+    exit 0
+fi
+
 if [[ ! -v KEYSTONE_DIR ]]
 then
-    echo "KEYSTONE_DIR not set! Please set this to the location of the keystone checkout!"
+    echo "KEYSTONE_DIR is not set! Please set this to where you cloned Keystone repo."
     exit 0
 fi
 
@@ -36,8 +41,6 @@ then
     exit 0
 fi
 
-export KEYSTONE_SDK_DIR=$KEYSTONE_DIR/sdk
-
 DEMO_DIR=$(pwd)
 
 set -e
@@ -46,40 +49,44 @@ mkdir -p libsodium_builds
 cd libsodium_builds
 
 # Clone, checkout, and build the server libsodium
-git clone https://github.com/jedisct1/libsodium.git libsodium_server
-cd libsodium_server
-git checkout 4917510626c55c1f199ef7383ae164cf96044aea
-patch -p1 < $DEMO_DIR/sodium_patches/configure.ac.patch
-./autogen.sh
-./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
-make
-export LIBSODIUM_DIR=$(pwd)/src/libsodium/
-cd ..
+if [ ! -d libsodium_server ]
+then
+  git clone https://github.com/jedisct1/libsodium.git libsodium_server
+  cd libsodium_server
+  git checkout 4917510626c55c1f199ef7383ae164cf96044aea
+  patch -p1 < $DEMO_DIR/sodium_patches/configure.ac.patch
+  ./autogen.sh
+  ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+  make
+  cd ..
+fi
+export LIBSODIUM_DIR=$(pwd)/libsodium_server/src/libsodium/
 
 # Clone, checkout, and build the client libsodium
-git clone https://github.com/jedisct1/libsodium.git libsodium_client
-cd libsodium_client
-git checkout 4917510626c55c1f199ef7383ae164cf96044aea
-./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
-make
-export LIBSODIUM_CLIENT_DIR=$(pwd)/src/libsodium/
-cd ..
+if [ ! -d libsodium_client ]
+then
+  git clone https://github.com/jedisct1/libsodium.git libsodium_client
+  cd libsodium_client
+  git checkout 4917510626c55c1f199ef7383ae164cf96044aea
+  ./configure --host=riscv64-unknown-linux-gnu --disable-ssp --disable-asm --without-pthreads
+  make
+  cd ..
+fi
+export LIBSODIUM_CLIENT_DIR=$(pwd)/libsodium_client/src/libsodium/
 
 cd ..
 
 # Copy the expected hash over
 echo "Copying expected sm hash from riscv-pk, this may be incorrect!"
-cp $KEYSTONE_SDK_DIR/../riscv-pk/hash/*.h include/
+cp $KEYSTONE_DIR/riscv-pk/hash/*.h include/
 
 # Build the demo
+mkdir -p build
+cd build
+cmake ..
 make
-make trusted_client.riscv
-
-# Copy the demo files
-make copybins
 
 # Done!
-
 echo -e "************ Demo binaries built and copied into overlay directory. ***************
             Run 'make image' in the Keystone build dir, and the demo binaries should
             be available in qemu next time you start it!"

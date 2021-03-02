@@ -81,7 +81,7 @@ void trusted_client_get_report(void* buffer, int ignore_valid){
     printf("[TC] Bad session keygen\n");
     trusted_client_exit();
   }
-  
+
   printf("[TC] Session keys established\n");
   channel_ready = 1;
 }
@@ -99,7 +99,7 @@ byte* trusted_client_box(byte* msg, size_t size, size_t* finalsize){
   }
 
   memcpy(buffer, msg, size);
-  
+
   size_t buf_padded_len;
   if (sodium_pad(&buf_padded_len, buffer, size, MSG_BLOCKSIZE, size_padded) != 0) {
     printf("[TC] Unable to pad message, exiting\n");
@@ -131,9 +131,9 @@ void trusted_client_unbox(unsigned char* buffer, size_t len){
   if( sodium_unpad(&unpad_len, buffer, ptlen, MSG_BLOCKSIZE) != 0){
     printf("[TC] Invalid message padding, ignoring\n");
     trusted_client_exit();
-  }    
+  }
 
-  
+
   return;
 }
 
@@ -144,7 +144,7 @@ int trusted_client_read_reply(unsigned char* data, size_t len){
   int* replyval = (int*)data;
 
   printf("[TC] Enclave said string was %i words long\n",*replyval);
-  
+
 }
 
 void send_exit_message(){
@@ -178,13 +178,13 @@ void send_wc_message(char* buffer){
 
 calc_message_t* generate_wc_message(char* buffer, size_t buffer_len, size_t* finalsize){
   calc_message_t* message_buffer = (calc_message_t*)malloc(buffer_len+sizeof(calc_message_t));
-  
+
   message_buffer->msg_type = CALC_MSG_WORDCOUNT;
   message_buffer->len = buffer_len;
   memcpy(message_buffer->msg, buffer, buffer_len);
 
   *finalsize = buffer_len + sizeof(calc_message_t);
-  
+
   return message_buffer;
 };
 
@@ -197,5 +197,5 @@ calc_message_t* generate_exit_message(size_t* finalsize){
   *finalsize = sizeof(calc_message_t);
 
   return message_buffer;
-  
+
 }

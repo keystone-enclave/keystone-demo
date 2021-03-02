@@ -6,7 +6,7 @@
    eventually. */
 
 
-int edge_init(Keystone* enclave){
+int edge_init(Keystone::Enclave* enclave){
 
   enclave->registerOcallDispatch(incoming_call_dispatch);
   register_call(OCALL_PRINT_BUFFER, print_buffer_wrapper);

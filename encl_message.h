@@ -13,9 +13,9 @@ typedef struct data_message_t {
   unsigned int msg_type;
 
   size_t data_len;
-  
+
   unsigned char data[];
-  
+
 } edge_data_message_t;
 
 #endif /* _ENCL_MESSAGE_H_ */
