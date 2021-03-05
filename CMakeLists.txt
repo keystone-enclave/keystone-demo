@@ -71,7 +71,7 @@ target_link_libraries(${host_bin} ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} ${KE
 
 set(eyrie_files_to_copy eyrie-rt)
 add_eyrie_runtime(${eapp_bin}-eyrie
-  "origin/master"
+  "v1.0.0"
   ${eyrie_plugins}
   ${eyrie_files_to_copy})
 

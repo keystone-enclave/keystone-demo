@@ -4,6 +4,11 @@
 #include "string.h"
 #include "edge_wrapper.h"
 
+unsigned char server_pk[crypto_kx_PUBLICKEYBYTES], server_sk[crypto_kx_SECRETKEYBYTES];
+unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];
+unsigned char rx[crypto_kx_SESSIONKEYBYTES];
+unsigned char tx[crypto_kx_SESSIONKEYBYTES];
+
 void channel_init(){
 
   /* libsodium config */
