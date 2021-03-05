@@ -29,9 +29,9 @@ then
     exit 0
 fi
 
-if [[ ! -v KEYSTONE_DIR ]]
+if [[ ! -v SM_HASH ]]
 then
-    echo "KEYSTONE_DIR is not set! Please set this to where you cloned Keystone repo."
+    echo "SM_HASH is not set! Please follow README to generate the expected hash"
     exit 0
 fi
 
@@ -78,13 +78,14 @@ cd ..
 
 # Copy the expected hash over
 echo "Copying expected sm hash from riscv-pk, this may be incorrect!"
-cp $KEYSTONE_DIR/riscv-pk/hash/*.h include/
+cp $SM_HASH include/
 
 # Build the demo
 mkdir -p build
 cd build
 cmake ..
 make
+make package
 
 # Done!
 echo -e "************ Demo binaries built and copied into overlay directory. ***************
