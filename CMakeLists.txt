@@ -75,10 +75,10 @@ add_eyrie_runtime(${eapp_bin}-eyrie
   ${eyrie_plugins}
   ${eyrie_files_to_copy})
 
-add_keystone_package(package
+add_keystone_package(packagedemo
   ${package_name}
   ${package_script}
   ${eyrie_files_to_copy} server_eapp/server_eapp.eapp_riscv ${host_bin})
 
-add_dependencies(package ${eapp_bin}-eyrie)
+add_dependencies(packagedemo ${eapp_bin}-eyrie)
 
