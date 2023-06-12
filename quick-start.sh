@@ -85,7 +85,7 @@ mkdir -p build
 cd build
 cmake ..
 make
-make package
+make packagedemo
 
 # Done!
 echo -e "************ Demo binaries built and copied into overlay directory. ***************
